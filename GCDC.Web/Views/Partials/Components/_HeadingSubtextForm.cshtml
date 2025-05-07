@@ -1,0 +1,73 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.HeadingSubtextForm;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            ViewData["reCaptcha"] = Common.Root.GoogleReCaptchaSiteKey;
+
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="reach-out-to-us-sec form--wrapper" @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName">
+                <h3 class="heading3 title">@Model.Heading</h3>
+                <div class="contact-tabs">
+                    <div class="tabs-nav">
+                        @if (Model.FormComponentPicker?.Any() == true)
+                        {
+                            int index = 1;
+                            foreach (var formComponent in Model.FormComponentPicker)
+                            {
+                                GCDC.Common.Models.CMS.IBaseForm baseCard = formComponent as GCDC.Common.Models.CMS.IBaseForm;
+                                if (baseCard != null)
+                                {
+                                    <div class="tab-link @(index == 1 ? "active" :"")" data-tab="@baseCard.Id">
+                                        @if (baseCard.Icon != null)
+                                        {
+                                            <img src="@baseCard?.Icon?.GetMediaUrl()" alt="@baseCard?.Title" class="card-icon" />
+                                        }
+                                        <p class="cta-txt tab-title">@baseCard?.Title</p>
+                                    </div>
+                                }
+                                index += 1;
+                            }
+                        }
+                    </div>
+                    <div class="forms-container container">
+                        @if (Model.FormComponentPicker?.Any() == true)
+                        {
+                            int index = 1;
+                            foreach (var formComponent in Model.FormComponentPicker)
+                            {
+                                if (index == 1)
+                                {
+                                    ViewBag.IsActiveFormId = formComponent.Id;
+                                }
+                                @await Component.InvokeAsync(formComponent.ContentType.Alias, formComponent)
+                                index += 1;
+                            }
+                        }
+                    </div>
+                </div>
+
+                @await Html.PartialAsync($"~/Views/Partials/Components/_FormSubmissionPopup.cshtml")
+
+            </section>
+
+            <input type="hidden" id="recaptchaToken" name="recaptchaToken" value="@Common.Root.GoogleReCaptchaSiteKey" />
+            <script src="https://www.google.com/recaptcha/api.js?render=@Common.Root.GoogleReCaptchaSiteKey"></script>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
+
+<script type="text/javascript">
+    window.referralId = "";
+</script>

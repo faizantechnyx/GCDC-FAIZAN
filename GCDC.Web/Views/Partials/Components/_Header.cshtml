@@ -1,0 +1,116 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.Header;
+
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+    var header_logo_path = GCDC.Common.Helpers.Common.GetHeaderLogoPath(Model?.HeaderLogo?.GetMediaUrl());
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            if (ViewBag?.IsNotFound == true)
+            {
+                @Html.Raw("<div class=\"header-light\">")
+
+            }
+            <section @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName" data-animation-type="fade-down" data-delay="0.5" class="sec-header">
+                <div class="container">
+                    <div class="header-wrapper">
+                        <div class="postBox">
+                            <div class="logo-box">
+                                <a href="@Model?.HeaderLogoHref?.Url">
+                                    <img src="@(header_logo_path)" class="js-tosvg">
+                                </a>
+                            </div>
+                            <div class="menu-wrapper">
+                                <div class="menu-box">
+                                    <ul>
+                                        @if (Model?.HeaderNavigations?.Children != null)
+                                        {
+                                            var currentUrl = Context.Request.Path.ToString().TrimEnd('/').Split('/').LastOrDefault();
+
+                                            foreach (NavigationItem item in Model.HeaderNavigations.Children)
+                                            {
+                                                var itemUrl = item?.Link?.Url?.TrimEnd('/').Split('/').LastOrDefault();
+                                                var isActive = (currentUrl == itemUrl) ? "active" : "";
+
+                                                <li class="menu-item @isActive">
+                                                    <div class="item--wrapper ">
+                                                        <a href="@item?.Link?.Url" class="cta-txt ">@item?.Link.Name</a>
+                                                        @if (item.Children != null && item.Children.Any())
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" class="js-tosvg insvg">
+                                                                <g id="ion:chevron-up-sharp">
+                                                                    <path id="Vector" d="M12.5 5.75L8 10.25L3.5 5.75" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="square"></path>
+                                                                </g>
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                    @if (item.Children != null && item.Children.Any())
+                                                    {
+                                                        <div class="subMenuBox">
+                                                            <ul>
+                                                                @foreach (NavigationItem subItem in item.Children)
+                                                                {
+                                                                    <li>
+@*                                                                         <a href="@subItem.Link?.Url">@subItem.Name</a>
+ *@                                                                        <a href="javascript:void(0);" data-page="@subItem?.Link?.Url" data-section="@subItem?.SectionName?.GetHtmlEncodedString()">@subItem?.Link.Name</a>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                     <div class="menu--footer">
+                                         @if (Model.ContactLink != null && !string.IsNullOrEmpty(Model.ContactLink.Url))
+                                         {
+                                             <div class="sec-btn">
+                                                <a href="@Model.ContactLink.Url" class="btn btn-secondary btn-dark">@Model.ContactLink.Name</a>
+                                             </div>                
+                                         }
+                                                      
+                                    </div>
+                                </div>
+                                <div class="menu-secondary">
+                                    <div class="lang--switch">
+                                        <a href="@Common.LanguageSwitcher(Context.Request)" class="cta-txt">@Model?.LanguageText</a>
+                                    </div>
+                                    <div class="header-btn">
+                                        @if (Model.ContactLink != null && !string.IsNullOrEmpty(Model.ContactLink.Url))
+                                        {
+                                            <a href="@Model.ContactLink.Url" class="btn btn-dark">@Model.ContactLink.Name</a>
+                                        }
+                                    </div>
+                                    <div class="hamburger--wrapper js-hamburger">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            @if (ViewBag?.IsNotFound == true)
+            {
+                @Html.Raw("</div>")
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

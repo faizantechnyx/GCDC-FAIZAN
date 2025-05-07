@@ -1,0 +1,170 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.FAqapi;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            var faqItems = Model.FaqPicker.Select(x => x as FAqsItem).Where(x => x != null).ToList();
+            var uniqueCategories = Common.GetDistinctValues<FAqsItem, string>(faqItems, item => (item?.FaqCategoryPicker as FAqcategoryItem)?.CategoryName);
+            var groupedFaqs = Common.GroupItemsByProperty(
+                faqItems,
+                item =>
+                    (item?.FaqCategoryPicker as FAqcategoryItem)?.CategoryName
+                    ?? "Uncategorized"
+            );
+
+            <div id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="bg-wrapper2 sty1">
+                <div class="bg-elements">
+                    <div class="sec-bg">
+                        <img src="/assets/img/bg-elements/bg-leaves.png">
+                    </div>
+                    <div class="top-element">
+                        <img src="/assets/img/bg-elements/element4.png">
+                    </div>
+                    <div class="right-element">
+                        <img src="/assets/img/bg-elements/element8.png">
+                    </div>
+                    <div class="left-element">
+                        <img src="/assets/img/bg-elements/element9.png">
+                    </div>
+                </div>
+                <section class="faq-sec" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                    <div class="sec-padded">
+                        <div class="faq-accordion-wrapper">
+                            <div class="filter-sec">
+                                <div class="search-faq">
+                                    <input class="input-txt-field body1" type="text" id="search" name="search" placeholder="Search FAQs" />
+                                    <div class="search-icon">
+                                        <img src="/assets/img/icon/search.svg" class="js-tosvg" />
+                                    </div>
+                                </div>
+                                @if (uniqueCategories != null)
+                                {
+                                    <div class="filter-tabs">
+                                        @{
+                                            int index = 0;
+                                            foreach (var category in uniqueCategories)
+                                            {
+                                                <div class="tab filter-tab @(index == 0 ? "active" : "")" data-target="#faqCategory-@(index)">
+                                                    <p class="cta-txt">
+                                                        @category
+                                                    </p>
+                                                </div>
+                                                index++;
+                                            }
+                                        }
+
+                                    </div>
+                                }
+                            </div>
+                            @if (uniqueCategories != null)
+                            {
+                                <div class="accordion-sec">
+                                    <div class="no--result" style="display: none;">
+                                        <h4 class="heading4">@Model?.NoResultMessage</h4>
+                                    </div>
+                                    @{
+                                        int index = 0;
+                                    }
+                                    @foreach (var category in uniqueCategories)
+                                    {
+                                        <div id="faqCategory-@(index)" class="accordion-block">
+                                            <h4 class="heading4 accordion-title">
+                                                @category
+                                            </h4>
+
+                                            <div class="accordion main-accordion" data-accordion="accordion1">
+                                                @if (groupedFaqs.ContainsKey(category))
+                                                {
+                                                    @foreach (var faq in groupedFaqs[category])
+                                                    {
+                                                        <div class="accordion-item">
+                                                            <div class="header-sec accordion-header">
+                                                                <h5 class="heading5 accordion-heading">@faq?.Question</h5>
+                                                                <div class="accordion-icon"></div>
+                                                            </div>
+                                                            <div class="accordion-content">
+                                                                <div class="content">
+                                                                    @Html.Raw(faq?.Answer)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        index++;
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#search").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            var hasVisibleItems = false; // Flag to check if at least one item is visible
+
+            $(".accordion-block").each(function () {
+                $(this)
+                    .find(".accordion-item")
+                    .each(function () {
+                        var headingText = $(this)
+                            .find(".accordion-heading")
+                            .text()
+                            .toLowerCase();
+                        var contentText = $(this).find(".content").text().toLowerCase();
+
+                        if (
+                            headingText.includes(searchText) ||
+                            contentText.includes(searchText)
+                        ) {
+                            $(this).show();
+                            hasVisibleItems = true;
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+
+                // Hide the entire section if no matching items are found
+                if (hasVisibleItems) {
+                    $(this).show();
+                    $(this).siblings(".no--result").hide(); // Hide the "No FAQs" message
+                } else {
+                    $(this).hide();
+                    $(this).siblings(".no--result").show(); // Hide the "No FAQs" message
+                }
+            });
+
+            const faqSection = document.querySelector(".faq-sec");
+
+            setTimeout(() => {
+                const faqTop = faqSection.getBoundingClientRect().top + window.scrollY;
+
+                if (window.scrollY > faqTop + 100 || window.scrollY < faqTop - 100) {
+                    window.scrollTo({ top: faqTop - 50, behavior: "smooth" });
+                }
+            }, 100);
+        });
+    });
+</script>

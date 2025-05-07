@@ -1,0 +1,206 @@
+﻿@using GCDC.Common.Models.CMS
+@using Serilog
+@using Umbraco.Cms.Core.Models
+@using GCDC.Common.Helpers
+@using Umbraco.Cms.Core.Models.PublishedContent
+@model GCDC.Common.Models.CMS.NewsItem
+@using GCDC.Core.Repositories.Common
+@using Serilog
+@inject IBaseControllerFactory factory;
+
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+    var VariationContextAccessor = factory.GetVariationContextAccessor();
+    VariationContextAccessor.VariationContext = new VariationContext(GCDC.Common.Helpers.Constants.Languages.Current);
+    var variationCultureCode = VariationContextAccessor?.VariationContext?.Culture;
+    var culture = new System.Globalization.CultureInfo(variationCultureCode);
+
+}
+@{
+    Layout = Constants.LayoutViewLocation;
+}
+
+@if (Model != null)
+{
+
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            var category = Model?.MediaCategoryPicker as NewsCategoryItem;
+
+            <section class="inner-banner-wrapper detail-inner-banner" @Constants.cms_page_name="@Model.ContentType.Alias" @Constants.cms_page_view_name="@ViewName">
+                <div class="section" id="section1">
+                    <div class="container">
+                        <div class="inner-banner-contentWrapper">
+                            <div class="top_tagline" data-animation-scroll="lineReveal" data-blur="10">
+                                <div class="tag">
+                                    <p class="body1 tag--label">@category?.CategoryName</p>
+                                </div>
+                                <div class="tag no_bg">
+                                    <p class="body1 tag--label">
+                                        @Model?.Date.ToString("MMMM dd, yyyy", culture)
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="news_title">
+                                <h3 class="heading3" data-animation-scroll="lineReveal" data-blur="10">
+                                    @Html.Raw(Model?.Headline)
+                                </h3>
+                            </div>
+                            @if (Model.BackgroundImage != null)
+                            {
+                                <div class="banner__img" data-animation-type="fade-up">
+                                    <img src="@Model.BackgroundImage.GetMediaUrl()" alt="@Model?.Alt">
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            <section class="detail_banner_content">
+                <div class="container">
+                    <div class="inner-banner-contentWrapper content--page">
+                        <div data-animation-type="fade-up" class="body1">
+                            @Html.Raw(Model?.Paragraph)
+                            @if (Model.Parent.Name == "Reports" && Model.DownloadReports != null)
+                            {
+                                <div class="download_btnWrap">
+                                    <div class="title_box">
+                                        <h5 class="heading5">@Common.GetDictionaryValueOrDefault("Download Report")</h5>
+                                    </div>
+                                    <div class="btn_right">
+                                        <a href="@Model.DownloadReports.GetMediaUrl()" target="_blank" class="btn btn_Icon">
+                                            @Common.GetDictionaryValueOrDefault("Download Report Button")
+                                            <img src="/assets/img/icon/download_icon.svg" class="js-tosvg" alt="">
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="bottom-wrapper">
+                            <div class="horizontal-line"
+                                 data-animation-scroll="horizontalLine"
+                                 data-initial-width="20">
+                                <span>
+                                    <img class="js-tosvg diamond-icon-horizontal icon-1"
+                                         src="/assets/img/icon/diamondIcon.svg"
+                                         alt="" />
+                                </span>
+                                <span>
+                                    <img class="js-tosvg diamond-icon-horizontal icon-2"
+                                         src="/assets/img/icon/diamondIcon.svg"
+                                         alt="" />
+                                </span>
+                                <span>
+                                    <img class="js-tosvg diamond-icon-horizontal icon-3"
+                                         src="/assets/img/icon/diamondIcon.svg"
+                                         alt="" />
+                                </span>
+                            </div>
+                        </div>
+                        <div class="share-wrapper">
+                            <h5 class="heading5">@Common.GetDictionaryValueOrDefault("Article Sharing")</h5>
+                            <div class="social-icons">
+                                <div class="icon-box share-btn" data-platform="linkedin">
+                                    <a href="javascript:void(0);"> <img loading="lazy" src="/assets/img/icon/linkedin.svg" class="js-tosvg" alt=""></a>
+                                </div>
+                                <div class="icon-box share-btn" data-platform="x">
+                                    <a href="javascript:void(0);"><img loading="lazy" src="/assets/img/icon/twitter.svg" class="js-tosvg" alt=""></a>
+                                </div>
+                                <div class="icon-box share-btn" data-platform="facebook">
+                                    <a href="javascript:void(0);"><img loading="lazy" src="/assets/img/icon/Facebook.svg" class="js-tosvg" alt=""></a>
+                                </div>
+                                <div class="icon-box share-btn" data-platform="instagram">
+                                    <a href="javascript:void(0);"><img loading="lazy" src="/assets/img/icon/Instagram.svg" class="js-tosvg" alt=""></a>
+                                </div>
+                                <div id="copyToClipboard" class="icon-box share-btn">
+                                    <a href="javascript:void(0);"> <img loading="lazy" src="/assets/img/icon/link.svg" class="js-tosvg img-link" alt=""></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="bg-wrapper2">
+                <div class="bg-elements">
+                    <div class="sec-bg">
+                        <img src="/assets/img/bg-elements/bg-leaves.png">
+                    </div>
+                    <div class="top-element">
+                        <picture>
+                            <source media="(min-width:600px)" srcset="/assets/img/bg-elements/element4.png">
+                            <img src="/assets/img/bg-elements/element4-mbl.png" alt="ceo-message">
+                        </picture>
+                    </div>
+                    <div class="right-element">
+                        <img src="/assets/img/bg-elements/element5.png">
+                    </div>
+                    <div class="bottom-element">
+                        <img src="/assets/img/bg-elements/element6.png">
+                    </div>
+                </div>
+                @if (Model.ComponentPicker != null)
+                {
+                    if (Model.ComponentPicker is IPublishedContent singleComponent)
+                    {
+                        try
+                        {
+                            ViewBag.NewsDetail = true;
+                            @await Component.InvokeAsync(singleComponent.ContentType.Alias, new { Component = singleComponent, CurrentPage = Model })
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Logger.Error(ex, ex.Message);
+                        }
+                    }
+                }
+            </div>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".share-btn").on("click", function () {
+            var platform = $(this).data("platform");
+            var pageUrl = encodeURIComponent(window.location.href);
+            var pageTitle = encodeURIComponent(document.title);
+            var shareUrl = "";
+
+            switch (platform) {
+                case "facebook":
+                    shareUrl = "https://www.facebook.com/sharer/sharer.php?u=" + pageUrl;
+                    break;
+                case "x":  // Updated from Twitter to X
+                    shareUrl = "https://x.com/intent/tweet?url=" + pageUrl + "&text=" + pageTitle;
+                    break;
+                case "linkedin":
+                    shareUrl = "https://www.linkedin.com/sharing/share-offsite/?url=" + pageUrl;
+                    break;
+                case "instagram":
+                    alert("Instagram does not support direct URL sharing.");
+                    return;
+            }
+
+            if (shareUrl) {
+                window.open(shareUrl, "_blank", "width=600,height=400");
+            }
+        });
+
+        $("#copyToClipboard").on("click", function () {
+            var tempInput = $("<input>");
+            $("body").append(tempInput);
+            tempInput.val(window.location.href).select();
+            document.execCommand("copy");
+            tempInput.remove();
+            alert("URL copied to clipboard!");
+        });
+    });
+</script>

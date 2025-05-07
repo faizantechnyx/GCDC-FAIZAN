@@ -1,0 +1,149 @@
+﻿@using GCDC.Common.Helpers
+@model String;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model))
+    {
+        try
+        {
+            @switch (Model)
+            {
+                case "Dark - Style 1":
+                    <div class="bg-elements">
+                        <div class="top-element">
+                            <img src="/assets/img/bg-elements/element1.png">
+                        </div>
+                    </div>
+                    break;
+
+                case "Dark - Style 2":
+                    <div class="bg-elements">
+                        <div class="top-element diamond-scroll-anim">
+                            <img src="/assets/img/bg-elements/element1.png">
+                        </div>
+                        <div class="right-element diamond-scroll-anim">
+                            <picture>
+                                <source media="(min-width:600px)" srcset="/assets/img/bg-elements/element2.png">
+                                <img src="/assets/img/bg-elements/element2-mbl.png" alt="ceo-message">
+                            </picture>
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element3.png">
+                        </div>
+                    </div>
+                    break;
+                case "Dark - Style 3":
+                    <div class="bg-elements">
+                        <div class="top-element diamond-scroll-anim">
+                            <img src="/assets/img/bg-elements/element1.png">
+                        </div>
+                        <div class="right-element diamond-scroll-anim">
+                            <img src="/assets/img/bg-elements/element2.png">
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element3.png">
+                        </div>
+                    </div>
+                    break;
+                case "Dark - Style 4":
+                    break;
+                case "Light - Style 1":
+                    <div class="bg-elements">
+                        <div class="top-element">
+                            <img src="/assets/img/bg-elements/element1.png">
+                        </div>
+                        <div class="right-element">
+                            <img src="/assets/img/bg-elements/element2.png">
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element3.png">
+                        </div>
+                    </div>
+                    break;
+                case "Light - Style 2":
+                    <div class="bg-elements">
+                        <div class="sec-bg">
+                            <img src="/assets/img/bg-elements/bg-leaves.png">
+                        </div>
+                        <div class="top-element">
+                            <img src="/assets/img/bg-elements/element4.png">
+                        </div>
+                        <div class="right-element">
+                            <img src="/assets/img/bg-elements/element5.png">
+                        </div>
+                    </div>
+                    break;
+                case "Light - Style 3":
+                    <div class="bg-elements">
+                        <div class="sec-bg">
+                            <img src="/assets/img/bg-elements/bg-leaves.png">
+                        </div>
+                        <div class="top-element">
+                            <img src="/assets/img/bg-elements/element4.png">
+                        </div>
+                        <div class="right-element">
+                            <img src="/assets/img/bg-elements/element5.png">
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element6.png">
+                        </div>
+                    </div>
+                    break;
+                case "Light - Style 4":
+                    <div class="bg-elements">
+                        <div class="sec-bg">
+                            <img src="/assets/img/bg-elements/bg-leaves.png">
+                        </div>
+                        <div class="top-element">
+                            <picture>
+                                <source media="(min-width:600px)" srcset="/assets/img/bg-elements/element4.png">
+                                <img src="/assets/img/bg-elements/element4-mbl.png" alt="ceo-message">
+                            </picture>
+                        </div>
+                        <div class="right-element">
+                            <img src="/assets/img/bg-elements/element5.png">
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element6.png">
+                        </div>
+                        <div class="diamond-element">
+                            <img src="/assets/img/bg-elements/element7.png">
+                        </div>
+                    </div>
+                    break;
+                case "Light - Style 5":
+                    <div class="bg-elements">
+                        <div class="top-element diamond-scroll-anim">
+                            <img src="/assets/img/bg-elements/element1.png">
+                        </div>
+                        <div class="right-element diamond-scroll-anim">
+                            <img src="/assets/img/bg-elements/element2.png">
+                        </div>
+                        <div class="bottom-element">
+                            <img src="/assets/img/bg-elements/element3.png">
+                        </div>
+                    </div>
+                    break;
+                case "Light - Style 6":
+                    <div class="bg-elements">
+                        <div class="left-middle-element">
+                            <img src="/assets/img/bg-elements/element11.png">
+                        </div>
+                        <div class="right-bottom-element">
+                            <img src="/assets/img/bg-elements/element5.png">
+                        </div>
+                    </div>
+                    break;
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

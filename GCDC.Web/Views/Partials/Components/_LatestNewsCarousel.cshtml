@@ -1,0 +1,162 @@
+﻿@using GCDC.Common.Models.CMS
+@using GCDC.Common.Helpers;
+@model GCDC.Common.Models.CMS.LatestNewsCarousel;
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using GCDC.Core.Repositories.Common
+@using Serilog
+@using Umbraco.Cms.Core.Models.PublishedContent
+@inject IBaseControllerFactory factory;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+    var VariationContextAccessor = factory.GetVariationContextAccessor();
+    VariationContextAccessor.VariationContext = new VariationContext(GCDC.Common.Helpers.Constants.Languages.Current);
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+
+            var sectionClassName = "";
+            var caroesoulClassName = "";
+            var sliderClassName = "";
+            var newsItemDescClassName = "";
+            if (ViewBag.NewsDetail != null && ViewBag.NewsDetail == true)
+            {
+                sectionClassName = "press-sec sty-01";
+                caroesoulClassName = "press";
+                sliderClassName = "press-card-slider";
+                newsItemDescClassName = "body1 description";
+            }
+            else
+            {
+                sectionClassName = "media-sec";
+                caroesoulClassName = "media";
+                sliderClassName = "media-slider";
+                newsItemDescClassName = "body2 heading";
+            }
+
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName" class="@sectionClassName">
+                @{
+                    int totalCards = Model.NewsPicker != null ? Model.NewsPicker.Count() : 0;
+                }
+                <div class="sec-padded">
+                    <div class="container">
+                        <div class="sub-content-sec">
+                            <div class="sub-heading">
+                                @if (Model.Overline != null)
+                                {
+                                    <p data-animation-type="fade-up" class="overline special-heading">@Model?.Overline</p>
+
+                                }
+                                <h3 data-animation-type="fade-up" class="heading3 heading-title">
+                                    @Model?.Heading
+                                </h3>
+                            </div>
+                            <div data-animation-type="fade-up" class="btn-desk">
+                                <div class="sec-btn">
+                                    @if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                                    {
+                                        var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                        IPublishedContent popupModel = null;
+                                        if (isPopup)
+                                        {
+                                            popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                        }
+                                        if (popupModel != null)
+                                        {
+                                            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                        }
+                                        <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                            <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn">@Model?.Cta.Name</a>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="@sliderClassName">
+                            @if (Model.NewsPicker != null)
+                            {
+                                @foreach (NewsItem mediaCard in Model.NewsPicker)
+                                {
+                                    var hasImage = mediaCard?.BackgroundImage != null;
+                                    var category = mediaCard?.MediaCategoryPicker as NewsCategoryItem;
+
+                                    <div class="media-card @(hasImage ? "" : "card_with_noImg")">
+                                        <div class="badge">
+                                            <p class="overline badge-txt">@category?.CategoryName</p>
+                                        </div>
+                                        @if (hasImage)
+                                        {
+                                            <div class="img-sec">
+                                                <a href="@mediaCard?.GetDetailPageUrl()">
+
+                                                    <picture>
+                                                        <source media="(min-width:600px)" srcset="@mediaCard?.BackgroundImage.GetMediaUrl()" alt="@mediaCard?.Alt">
+                                                        <img class="card-img" src="@(mediaCard?.MobileImage.GetMediaUrl() ?? mediaCard?.BackgroundImage.GetMediaUrl())" alt="@mediaCard?.Alt">
+                                                    </picture>
+                                                </a>
+                                            </div>
+                                        }
+                                        <div class="text-sec">
+                                            <h5 class="heading5 heading">
+                                                <a href="@mediaCard?.GetDetailPageUrl()">@Html.Raw(mediaCard?.Headline)</a>
+                                            </h5>
+                                            <div class="description-wrapper">
+                                                <p class="@newsItemDescClassName">
+                                                    <a href="@mediaCard?.GetDetailPageUrl()">@mediaCard?.ShortDescription</a>
+                                                </p>
+                                                <p class="overline para">
+                                                    @mediaCard?.Date.ToString("MMMM dd, yyyy")
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="custom-arrows-@caroesoulClassName">
+                            <span class="slide-count heading5">
+                                <span class="current-slide-@caroesoulClassName heading5"></span>
+                                <span class="sep-slide heading5"> / </span>
+                                <span class="total-slides-@caroesoulClassName heading5"></span>
+                            </span>
+                            <div class="arrows-wrapper">
+                                <button class="custom-prev-@caroesoulClassName">
+                                    <svg width="22"
+                                         height="22"
+                                         viewBox="0 0 22 22"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.9173 16.846C8.75444 16.846 8.59159 16.786 8.46302 16.6575L3.26016 11.4546C3.01159 11.206 3.01159 10.7946 3.26016 10.546L8.46302 5.34317C8.71159 5.0946 9.12302 5.0946 9.37159 5.34317C9.62016 5.59174 9.62016 6.00317 9.37159 6.25174L4.62302 11.0003L9.37159 15.7489C9.62016 15.9975 9.62016 16.4089 9.37159 16.6575C9.25159 16.786 9.08016 16.846 8.9173 16.846Z"
+                                              fill="#292D32" />
+                                        <path d="M18.2859 11.6431H3.86014C3.50871 11.6431 3.21729 11.3517 3.21729 11.0003C3.21729 10.6489 3.50871 10.3574 3.86014 10.3574H18.2859C18.6373 10.3574 18.9287 10.6489 18.9287 11.0003C18.9287 11.3517 18.6373 11.6431 18.2859 11.6431Z"
+                                              fill="#292D32" />
+                                    </svg>
+                                </button>
+                                <button class="custom-next-@caroesoulClassName">
+                                    <svg width="22"
+                                         height="22"
+                                         viewBox="0 0 22 22"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.0829 16.846C12.92 16.846 12.7571 16.786 12.6286 16.6575C12.38 16.4089 12.38 15.9975 12.6286 15.7489L17.3771 11.0003L12.6286 6.25174C12.38 6.00317 12.38 5.59174 12.6286 5.34317C12.8771 5.0946 13.2886 5.0946 13.5371 5.34317L18.74 10.546C18.9886 10.7946 18.9886 11.206 18.74 11.4546L13.5371 16.6575C13.4086 16.786 13.2457 16.846 13.0829 16.846Z"
+                                              fill="#292D32" />
+                                        <path d="M18.1401 11.6431H3.71439C3.36296 11.6431 3.07153 11.3517 3.07153 11.0003C3.07153 10.6489 3.36296 10.3574 3.71439 10.3574H18.1401C18.4915 10.3574 18.783 10.6489 18.783 11.0003C18.783 11.3517 18.4915 11.6431 18.1401 11.6431Z"
+                                              fill="#292D32" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

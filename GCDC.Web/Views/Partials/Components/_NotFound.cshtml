@@ -1,0 +1,81 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.NotFound;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <div class="bg-wrapper2">
+                <div class="bg-elements">
+                    <div class="sec-bg">
+                        <img src="/assets/img/bg-elements/bg-leaves.png">
+                    </div>
+                    <div class="top-element desktop-only">
+                        <picture>
+                            <source media="(min-width:600px)"
+                                    srcset="/assets/img/bg-elements/element4.png" />
+                            <img src="/assets/img/bg-elements/element4-mbl.png" alt="ceo-message" />
+                        </picture>
+                    </div>
+                    <div class="right-element desktop-only">
+                        <img src="/assets/img/bg-elements/element5.png">
+                    </div>
+                    <div class="bottom-element">
+                        <img src="/assets/img/bg-elements/element6.png">
+                    </div>
+                </div>
+                <section class="inner_404_banner" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                    <div class="contentWrapper">
+                        <div class="container">
+                            <div class="text-container"
+                                 data-animation-type="fade-up"
+                                 data-blur="">
+                                <h1 class="heading1 main_title_box">
+                                    @Model?.Heading
+                                    <div class="bottom-active">
+                                        <span>
+                                            <img class="js-tosvg icon-start"
+                                                 src="/assets/img/icon/diamondIcon.svg"
+                                                 alt="" />
+                                        </span>
+                                        <span>
+                                            <img class="js-tosvg icon-center"
+                                                 src="/assets/img/icon/diamondIcon.svg"
+                                                 alt="" />
+                                        </span>
+                                        <span>
+                                            <img class="js-tosvg icon-end"
+                                                 src="/assets/img/icon/diamondIcon.svg"
+                                                 alt="" />
+                                        </span>
+                                    </div>
+                                </h1>
+                                <div class="inner_content_box">
+                                    <h3 class="heading3">@Model?.Title</h3>
+                                    <p class="body1">@Model?.Description</p>
+                                    @if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                                    {
+                                        <div class="btn_wrap">
+                                            <a href="@Model?.Cta?.Url" class="btn">@Model?.Cta?.Name</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

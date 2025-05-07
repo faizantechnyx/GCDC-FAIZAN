@@ -1,0 +1,61 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS
+@model GCDC.Common.Models.CMS.TextFormBox
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="div_popup_@(Model.Id)" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" class="investment-form form--wrapper" style="display:none;">
+                <div id="form-modal-id__@(Model.Id)" class="modal filter_modal">
+
+                    <div class="modal-content form-modal">
+                        <span class="close" aria-label="Close">
+                            <img class="js-tosvg" src="/assets/img/icon/close.svg" alt="close">
+                        </span>
+                        <div class="customScroll_bar">
+                            @Html.Raw(Model?.Overline)
+                                
+                            @if (!string.IsNullOrEmpty(Model?.ReferralId))
+                            {
+                                <script type="text/javascript">
+                                    window.referralId = "@Model.ReferralId";
+                                </script>
+                            }
+
+                            <div class="forms-container-modal" >
+                                @if (Model?.FormPicker != null)
+                                {
+                                    ViewBag.UseDarkFontForButton = Model.UseDarkFontForButton;
+                                    var formComponent = Model.FormPicker;
+                                    ViewBag.IsActiveFormId = formComponent.Id;
+                                    @await Component.InvokeAsync(formComponent.ContentType.Alias, formComponent)
+                                }
+                            </div>
+                            @await Html.PartialAsync($"~/Views/Partials/Components/_FormSubmissionPopup.cshtml")
+                        </div>
+                        <div class="modal--elements">
+                            <div class="bg-elements">
+                                <div class="top-element">
+                                    <img src="/assets/img/bg-elements/filter-element1.png">
+                                </div>
+                                <div class="bottom-element">
+                                    <img src="/assets/img/bg-elements/filter-element2.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="recaptchaToken" name="recaptchaToken" value="@Common.Root.GoogleReCaptchaSiteKey" />
+                <script src="https://www.google.com/recaptcha/api.js?render=@Common.Root.GoogleReCaptchaSiteKey"></script>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

@@ -1,0 +1,53 @@
+﻿<!--Gallery Modal Popup-->
+<div id="customPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-left">
+            <div class="popup-media">
+            </div>
+        </div>
+        <div class="popup-right">
+            <h3 class="heading3 popup-title"></h3>
+            <p class="body1">
+                <span style="color: #c7c8c8; opacity: .7;">@GCDC.Common.Helpers.Common.GetDictionaryValueOrDefault("Popup Publish")</span>
+                <span class="popup-date" id="popup-date"></span>
+            </p>
+            <div class="btn_wrap">
+                <a href="javascript:void(0);" class="btn btn_Icon popup-download btn-primary" download>
+                    <p>@GCDC.Common.Helpers.Common.GetDictionaryValueOrDefault("Download")</p>
+                    <div class="download_iconBox">
+                        <img src="/assets/img/icon/download_icon.svg" class="js-tosvg" alt="">
+                    </div>
+                </a>
+            </div>
+        </div>
+        <button id="prev-btn" class="nav-btn">
+            <img src="/assets/img/icon/arrow.svg" class="js-tosvg" alt="">
+        </button>
+        <button id="next-btn" class="nav-btn">
+            <img src="/assets/img/icon/arrow.svg" class="js-tosvg" alt="">
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const downloadButton = document.querySelector(".btn_wrap a.btn_Icon");
+
+        if (downloadButton) {
+            downloadButton.addEventListener("click", function (event) {
+                // Extract file name and extension from the URL
+                let fileUrl = this.getAttribute("href");
+                let fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+                let fileExtension = fileName.split('.').pop();
+
+                // Push event to Google Tag Manager
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'file_download',
+                    'event_action': 'download',
+                    'event_label': fileName
+                });
+            });
+        }
+    });
+</script>

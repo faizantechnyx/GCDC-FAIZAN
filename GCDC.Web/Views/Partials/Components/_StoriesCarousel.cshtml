@@ -1,0 +1,100 @@
+﻿    @using GCDC.Common.Helpers
+    @using GCDC.Common.Models.CMS
+    @model GCDC.Common.Models.CMS.StoriesCarousel;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model?.Name))
+    {
+        try
+        {
+            <section class="sec-media-gallery-grid" @GCDC.Common.Helpers.Constants.cms_component_name="@(Model?.Name ?? "Unknown")" @Constants.cms_page_view_name="@(ViewName ?? "Unknown")">
+                <div class="sec-padded">
+                    <div class="container">
+                        <div class="wrapper-box">
+                            <div class="media-gallery-box">
+                                @if (!string.IsNullOrEmpty(Model?.Headline))
+                                {
+                                    <h3 class="heading3 title">@Model.Headline</h3>
+                                }
+                                <div class="tab-content-wrapper level2">
+                                    <div class="tab-content">
+                                        <div class="filter-panel">
+                                            <div class="media-listing grid-view-listing gridWrapper" data-page="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn_box">
+                                    <a href="javascript:void(0);" class="btn btn-load-more">Load more</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    let page = 1;
+                    let perPage = 3;
+
+                    function loadNewsItems() {
+                        var dataToSend = {
+                            PageNo: page,
+                            PageSize: perPage,
+                            Culture: '@GCDC.Common.Helpers.Constants.Languages.Current',
+                            ContentType: '@GCDC.Common.Helpers.Constants.ContentTypes.News',
+                            SearchQuery: [],
+                            Category: 'Stories'
+                        };
+
+                        $.ajax({
+                            url: '@Url.Action("load", "api")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(dataToSend),
+                            headers: {
+                                'RequestVerificationToken': '@ViewData["RequestVerificationToken"]'
+                            },
+                            success: function (response) {
+                                if (response.htmlContent && response.htmlContent.trim().length > 0) {
+                                    $(".media-listing").append(response.htmlContent);
+                                    page++;
+
+                                    // Check if more pages exist, otherwise hide the button
+                                    if (!response.hasNextPage) {
+                                        $(".btn-load-more").fadeOut();
+                                    }
+                                } else {
+                                    $(".btn-load-more").fadeOut();
+                                }
+                            },
+                            error: function () {
+                                alert("Failed to load news items.");
+                            }
+                        });
+                    }
+
+                    $(".btn-load-more").click(function () {
+                        loadNewsItems();
+                    });
+
+                    loadNewsItems(); // Load initial data
+                });
+            </script>
+
+
+
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

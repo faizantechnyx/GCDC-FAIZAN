@@ -1,0 +1,370 @@
+﻿@using GCDC.Common.Models.CMS
+@using GCDC.Common.Helpers
+<!DOCTYPE html>
+<html lang="@Constants.Languages.Current" dir="@(!Constants.Languages.Current.Equals(Constants.Languages.Default)? "rtl" :"ltr")" app_version="@GCDC.Common.Helpers.Common.GetAppVersion()">
+<head>
+    <!-- Google Tag Manager -->
+    <script>
+        @Html.Raw(Common.Root.HeaderScript)
+    </script>
+    <!-- End Google Tag Manager -->
+    @{
+        IMetaTags _pageMeta = (Model as IMetaTags);
+        IPageCustomFunctionality _pageCustomFunctionality = (Model as IPageCustomFunctionality);
+
+        if (ViewBag.NewsItemMeta != null)
+        {
+            _pageMeta = ViewBag.NewsItemMeta;
+        }
+    }
+    @if (_pageMeta.DisableSearchEngineIndexing == true)
+    {
+        <meta name="robots" content="noindex" />
+        <meta name="googlebot" content="noindex" />
+        <meta name="googlebot-news" content="noindex" />
+        <meta name="slurp" content="noindex" />
+        <meta name="msnbot" content="noindex" />
+    }
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@_pageMeta?.PageTitle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
+    <meta name="theme-color" content="#FFFFFF" />
+    @* <link rel="manifest" href="/assets//manifest.json">*@
+
+    <!-- SEO Related tag start -->
+    <meta property="og:title" content="@_pageMeta?.MetaTitle?.Trim()">
+    <meta property="title" content="@_pageMeta?.PageTitle.Trim()">
+    <meta name="description" content="@_pageMeta?.MetaDescription">
+    <meta name="keywords" content="@_pageMeta?.MetaKeywords">
+    <meta property="og:title" content="@_pageMeta?.MetaTitle?.Trim()" />
+    <meta property="og:description" content="@_pageMeta?.MetaDescription" />
+    <meta property="og:image" content="@Common.ConcateBaseUrl(_pageMeta?.OpenGraphImage?.GetMediaUrl()))" />
+    <link rel="canonical" href="@_pageMeta?.CanonicalLink">
+    <link rel="alternate" href="@_pageMeta?.AlternateLink1" hreflang="x-default">
+    <link rel="alternate" href="@_pageMeta?.AlternateLink2" hreflang="x-default">
+    <link rel="alternate" hreflang="x-default" href=" @_pageMeta?.DefaultHreflangUrl" />
+    <link rel="alternate" hreflang="en" href=" @_pageMeta?.EnglishHreflangUrl" />
+    <link rel="alternate" hreflang="ar" href="@_pageMeta?.ArabicHreflangUrl" />
+    <link rel="alternate" hreflang="en-SA" href=" @_pageMeta?.EnglishHreflangUrl" />
+    <link rel="alternate" hreflang="ar-SA" href="@_pageMeta?.ArabicHreflangUrl" />
+    <meta name="google" content="notranslate" />
+
+    <style>
+        @Html.Raw(Common.Root.CriticalCss)
+
+        @if (_pageCustomFunctionality != null && _pageCustomFunctionality.CustomCss != null)
+        {
+            @Html.Raw(_pageCustomFunctionality.CustomCss)
+        }
+
+    </style>
+    @if (Constants.Languages.Current.Equals("ar", StringComparison.InvariantCultureIgnoreCase))
+    {
+            <link rel="stylesheet" href="/assets/css/style-rtl.min.css" as="style">
+    }
+    else
+    {
+            <link rel="stylesheet" href="/assets/css/style.min.css" as="style">
+    }
+    <link href="~/css/editor-styles.css" rel="stylesheet" />
+
+    <style class="vjs-styles-defaults">
+        .video-js {
+            width: 300px;
+            height: 150px;
+        }
+
+        .vjs-fluid:not(.vjs-audio-only-mode) {
+            padding-top: 56.25%
+        }
+    </style>
+
+    <script>
+
+        @Html.Raw(Common.Root.CriticalJs)
+
+        @if (_pageCustomFunctionality != null && _pageCustomFunctionality.CustomJs != null)
+        {
+            @Html.Raw(_pageCustomFunctionality.CustomJs)
+        }
+
+    </script>
+
+</head>
+<body>
+    <script>
+        //Initialize dataLayer object to be used in the app
+        window.dataLayer = window.dataLayer || [];
+
+        //page_view Event
+        window.dataLayer.push({
+          'event': 'page_view',
+          'page_path': window.location.pathname,
+          'page_url': window.location.href,
+          'page_title': document.title
+        });
+    </script>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        @Html.Raw(Common.Root.BodyScript)
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <!--Modal Popup-->
+    @if (ViewData["IsNewsMediaListing"] == null || ViewData["IsNewsMediaListing"] as bool? == false)
+    {
+        @await Html.PartialAsync(Constants.ComponentViewLocation + "_ModalPopup.cshtml")
+    }
+    <!--Header-->
+    @await Component.InvokeAsync("header")
+
+    <div class="cookie-banner hide" id="cookieBanner">
+        <div class="body1 cookie-heading">
+            @Html.Raw(Common.Root.CookieBannerContent)
+        </div>
+        <div class="cookie-buttons">
+            <button class="btn btn-transparent" id="declineCookies">@Common.Root.CookieBannerLabel1</button>
+            <button class="btn " id="acceptCookies">@Common.Root.CookieBannerLabel2</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <!--Body-->
+        @RenderBody()
+        <!--Footer-->
+        @await Component.InvokeAsync("footer")
+    </div>
+
+    <!-- Include JavaScript File -->
+    <script type="text/javascript" src="~/assets/js/vendors.min.js"></script>
+    <script type="text/javascript">
+        var customVariables = {
+            baseURL : '',
+        };
+
+    </script>
+    <script async="" type="text/javascript" src="~/assets/js/scripts.js"></script>
+
+    @if (ViewData["ContactUs"] != null || ViewData["ContactUs"] as bool? == true)
+    {
+        @await Html.PartialAsync(Constants.ComponentViewLocation + "_ReCaptchaSiteKey.cshtml", Common.Root)
+    }
+
+    <!-- Form Submission JS -->
+    <script type="text/javascript">
+
+            // Reset all forms with class 'contact-form'
+            function ResetForms()
+            {
+                $(".contact-form").each(function () {
+                    ResetForm(this);
+                });
+            }
+
+            function ResetForm(form)
+            {
+                form.reset();
+                $(form).find(".char-count").text("0 / 300");
+                $(form).find("input, textarea").each(function () {
+                    var formGroup = $(this).closest(".form-group");
+                    formGroup.removeClass("success failed"); // Reset validation classes
+                });
+                // Reset intlTelInput field (Phone Input)
+                var phoneInput =$(form).find("input[name='phone']")[0];
+                if (phoneInput) {
+                    var iti = $(form).data("iti"); // Retrieve stored intlTelInput instance
+                    if (iti) {
+                        iti.setCountry("sa"); // Reset country to default (Saudi Arabia)
+                        phoneInput.value = ""; // Clear phone input value
+                    }
+                }
+            }
+
+            $(document).ready(function(){
+                $('.tab-link').click(function(){
+                    ResetForms();
+                });
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+            function getUTMParams() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return {
+                    utm_source: urlParams.get("utm_source") || "",
+                    utm_medium: urlParams.get("utm_medium") || "",
+                    utm_campaign: urlParams.get("utm_campaign") || "",
+                    utm_term: urlParams.get("utm_term") || "",
+                    utm_content: urlParams.get("utm_content") || "",
+                    referralId : window.referralId || ""
+
+                };
+            }
+
+            $(document).on("submit", ".contact-form:visible", function (event)
+            {
+                event.preventDefault();
+
+                const form = this;
+                const formId = form.getAttribute("form-id");
+                const formUrl = form.getAttribute("form-url");
+
+                if (!formId || !formUrl) {
+                    return;
+                }
+
+                // Get UTM parameters
+                const utmParams = getUTMParams();
+
+                let formData = {};
+                let hasEmptyField = false;
+                $(form)
+                    .find("input, textarea")
+                    .each(function () {
+                        const value = $(this).val().trim();
+                        if (!value) {
+                            hasEmptyField = true;
+                        }
+                        formData[$(this).attr("name")] = value;
+                    });
+
+                // If any field is empty, return null
+                if (hasEmptyField) {
+                    return;
+                }
+
+                // Append UTM parameters to formData
+                Object.assign(formData, utmParams );
+                // console.log("Referral ID being sent:", referralId);
+                // console.log("FormData:", formData);
+                    grecaptcha.ready(function () {
+                    grecaptcha.execute('@Common.Root.GoogleReCaptchaSiteKey').then(function (token) {
+                        if (!token) {
+                            //console.log("Recaptcha token generation failed");
+                            return;
+                        }
+
+                        const payload = {
+                            formId: parseInt(formId),
+                            formUrl: formUrl,
+                            formData: JSON.stringify(formData),
+                            RecaptchaToken: token
+                        };
+
+                        window.dataLayer.push({
+                            event: "form_submit",
+                            event_action: "form_submit",
+                            event_label: form.getAttribute("name") || "Unnamed Form"
+                        });
+
+                        $.ajax({
+                            url: "/api/submit-form",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify(payload),
+                            success: function (result) {
+                                ResetForm(form);
+                                $(".form--wrapper").addClass("formSuccess");
+                            },
+                            error: function (xhr) {
+                                $(".form--wrapper").addClass("formfailed");
+                            }
+                        });
+                    });
+                });
+            });
+        });
+
+    </script>
+
+    <script>
+
+       let formModal;
+       let originalParent;
+       let originalNextSibling;
+       let old_form_id;
+       $(document).ready(function () 
+       {
+           //Event delegation for dynamically rendered modals
+           $(document).on("click", ".div_anchor_popup", function () 
+           {
+               formModal = $("#" + $(this).data("modal-id"));
+               const leaderModal = $("#leader-modal");
+               if (formModal.length && leaderModal.length) 
+               {
+                    //If another modal was already moved, move it back
+                    if (formModal !== undefined && originalParent) {
+                        if (originalNextSibling && originalNextSibling.length) {
+                            formModal.insertBefore(originalNextSibling);
+                        } else {
+                            originalParent.append(formModal);
+                        }
+                    }
+
+                    //Store original position
+                    originalParent = formModal.parent();
+                    originalNextSibling = formModal.next();
+
+                    //change modal-popup id before showing, to make it work with JS
+                    let form_popup = $(formModal.children()[0]);
+                    if(form_popup!=null && form_popup.length > 0)
+                    {
+                        var popup_id = $(form_popup).attr('id');
+                        old_form_id = popup_id;
+                        $(form_popup).attr('id', popup_id.split('__')[0]);
+                        $($(form_popup).parent()).show();
+                    }
+                    //Move and show modal
+                    formModal.detach().insertAfter(leaderModal);
+                    openformModal();
+                    initCustomScrollbar();
+
+                    const closebtn = $($($(form_popup).children()[0]).children())[0];
+                    $(closebtn).click(function(){
+                        closeFormPopup();                    
+                    });
+               }
+           });                        
+        });
+
+        function closeFormPopup() 
+        { 
+            if (formModal && originalParent) {
+                closeformModal();
+            }
+        }
+
+        function resetFormPopup()
+        {
+            if (originalNextSibling && originalNextSibling.length) 
+            {
+                formModal.insertBefore(originalNextSibling);
+            } else 
+            {
+                originalParent.append(formModal);
+            }
+
+            //Reset form inside modal
+            const form = formModal.find(".contact-form")[0];
+            if (form) {
+                ResetForm(form);
+            }    
+            //change modal-popup id before showing, to make it work with JS
+            let form_popup = $(formModal.children()[0]);
+            if(form_popup!=null && form_popup.length > 0)
+            {
+                $(form_popup).attr('id', old_form_id);
+            }
+            $($(form_popup).parent()).hide();
+            old_form_id = null;
+            formModal = null;
+            originalParent = null;
+            originalNextSibling = null;              
+        }
+
+    </script>
+</body>
+</html>

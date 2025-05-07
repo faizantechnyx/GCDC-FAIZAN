@@ -1,0 +1,66 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS
+@model GCDC.Common.Models.Api.Response.SearchListing
+@using GCDC.Core.Repositories.Common
+
+
+@{
+    var newsItems = Model.Records as IEnumerable<NewsItem>;
+}
+
+@if (newsItems != null && newsItems.Any())
+{
+    <input type="hidden" value="@newsItems.Count()" id="TotalResults" />
+
+    @foreach (NewsItem item in newsItems)
+    {
+        var category = item?.MediaCategoryPicker as NewsCategoryItem;
+
+        <div class="listingWrapper element-item">
+            <a href="@item?.GetDetailPageUrl()">
+                <div class="card_box grid-view-item js-grid-view-item">
+                    <div class="tag">
+                        <p class="body1 tag--label">@category?.CategoryName</p>
+                    </div>
+
+                    <div class="img-sec">
+                        @if (item.BackgroundImage != null)
+                        {
+                            <img src="@item?.BackgroundImage.GetMediaUrl()" alt="@item?.Alt" />
+                        }
+                    </div>
+
+                    <div class="content_box">
+                        <div class="main-title">
+                            <div class="list_tag">
+                                <p class="body1 tag--label">@category?.CategoryName</p>
+                            </div>
+
+                            @if (item.Headline != null)
+                            {
+                                <div class="title">
+                                    <h5 class="heading5 card_main_title">
+                                        @Html.Raw(item?.Headline)
+                                    </h5>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="decription_wrapper">
+                            <div class="content__wrap">
+                                @if (!string.IsNullOrEmpty(item?.Paragraph?.ToString()))
+                                {
+                                    <div class="pera-sec">
+                                        @Html.Raw(item?.Paragraph)
+                                    </div>
+                                }
+
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+}

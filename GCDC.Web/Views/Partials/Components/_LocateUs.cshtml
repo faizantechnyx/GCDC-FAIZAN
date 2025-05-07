@@ -1,0 +1,173 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS
+@model GCDC.Common.Models.CMS.LocateUs;
+@{
+	var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+	@using (new FunctionTracer(false, Model.Name))
+	{
+		try
+		{
+			<section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="map-wrapper" @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName">
+				<div class="container">
+					<div class="sec-padded">
+						<div class="map-sec">
+							<div class="contact-sec">
+								<h3 class="heading3 title">@Model?.Overline</h3>
+								<p class="body1 para">
+									@Model?.Details
+								</p>
+
+								@if (!string.IsNullOrEmpty(Model.LocationUrl))
+								{
+									<a href="@Model.LocationUrl" target="_blank" class="details-sec">
+										@if (!string.IsNullOrEmpty(Model.LocationIcon?.GetMediaUrl()))
+										{
+											<div class="contact-icon">
+												<img src="@Model?.LocationIcon.GetMediaUrl()" class="js-tosvg icon" />
+											</div>
+										}
+										<div class="txt-box">
+											@if (Model.Locations != null && Model.Locations.Any())
+											{
+												foreach (var item in Model.Locations)
+												{
+													<p class="body1 txt">@item</p>
+												}
+											}
+										</div>
+									</a>
+								}
+
+								@if (!string.IsNullOrEmpty(Model.ContactNumber))
+								{
+									<a href="tel:@Model.ContactNumber.Replace(" ","")" class="details-sec">
+										@if (!string.IsNullOrEmpty(Model.LocalPhoneIcon?.GetMediaUrl()))
+										{
+											<div class="contact-icon">
+												<img src="@Model?.LocalPhoneIcon.GetMediaUrl()" class="js-tosvg icon" />
+											</div>
+										}
+										<div class="txt-box">
+											<p class="body1 txt">@Model?.ContactTitle</p>
+											<p class="body1 txt">@Model?.ContactNumber</p>
+										</div>
+									</a>
+								}
+								@if (!string.IsNullOrEmpty(Model.InternationalNumber))
+								{
+									<a href="tel:@Model.InternationalNumber.Replace(" ","")" class="details-sec">
+										@if (!string.IsNullOrEmpty(Model.InternationalPhoneIcon?.GetMediaUrl()))
+										{
+											<div class="contact-icon">
+												<img src="@Model.InternationalPhoneIcon.GetMediaUrl()" class="js-tosvg icon" />
+											</div>
+										}
+										<div class="txt-box">
+											<p class="body1 txt">@Model?.InternationalNumberTitle</p>
+											<p class="body1 txt">@Model?.InternationalNumber</p>
+										</div>
+									</a>
+								}
+							</div>
+
+							<div class="map-box">
+								 <!DOCTYPE html>
+								 <html>
+
+								 <head>
+									<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+								</head>
+
+								<body>
+									<section class="kmzMap-sec">
+										<div id="map_canvas"></div>
+									</section>
+
+									<script async defer
+											src="https://maps.googleapis.com/maps/api/js?key=@Model.MapApiKey&callback=initMap">
+									</script>
+
+									<script>
+										// function initMap() {
+										window.initMap = function () {
+
+											var latitude = @Html.Raw(Model.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+											var longitude = @Html.Raw(Model.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+											var latlng = new google.maps.LatLng(
+												latitude,
+												longitude
+											); // Map center coordinates
+											var mapOptions = {
+												zoom: 14,
+												// center: { lat: 26.561672825115423, lng: 37.954395558120126 },
+												center: latlng,
+
+												mapTypeId: google.maps.MapTypeId.ROADMAP,
+												disableDefaultUI: true, // Hides default controls
+												styles: [
+													{ featureType: "water", stylers: [{ color: "blue" }] },
+													{
+														featureType: "road",
+														elementType: "geometry",
+														stylers: [{ color: "#c2b79c" }],
+													},
+													{
+														elementType: "labels.text.fill",
+														stylers: [{ color: "#685538" }],
+													},
+													{
+														elementType: "labels.icon",
+														stylers: [{ visibility: "off" }],
+													},
+												],
+											};
+
+											// Initialize the map
+											var map = new google.maps.Map(
+												document.getElementById("map_canvas"),
+												mapOptions
+											);
+											//Add Pin Marker
+
+											// Initialize the map
+											var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+											// Add a marker
+											var marker = new google.maps.Marker({
+												position: latlng,
+												map: map,
+												title: "", // Optional: text shown on hover
+												icon: {
+
+													fillColor: "#ff6600",
+													fillOpacity: 1,
+													strokeColor: "#000",
+													strokeWeight: 2,
+													scale: 5
+												}
+											});
+										};
+									</script>
+								</body>
+
+							</html>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+			</section>
+		}
+		catch
+		{
+			throw;
+		}
+	}
+}

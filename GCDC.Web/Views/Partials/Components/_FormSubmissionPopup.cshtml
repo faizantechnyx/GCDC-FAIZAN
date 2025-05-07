@@ -1,0 +1,49 @@
+﻿@using GCDC.Common.Helpers
+
+<div class="pop--wrapper">
+    <div class="popup-box success-popup">
+        <div class="cross js--close">
+            <img class="js-tosvg" src="/assets/img/icon/close.svg" alt="close">
+        </div>
+        <div class="bg-elements">
+            <div class="top-element">
+                <img class="js-tosvg" src="/assets/img/bg-elements/popup--top.png"
+                     alt="top-element">
+            </div>
+            <div class="bottom-element">
+                <img class="js-tosvg" src="/assets/img/bg-elements/popup--bottom.png"
+                     alt="top-element">
+            </div>
+        </div>
+        <div class="postBox">
+            <h5 class="heading5">@Common.GetDictionaryValueOrDefault("SuccessMessageTitle")</h5>
+            <p class="body1 popup-para">
+                @Common.GetDictionaryValueOrDefault("SuccessMessage")
+            </p>
+            <a href="javaScript:void(0);" class="btn js--close">@Common.GetDictionaryValueOrDefault("CloseText")</a>
+        </div>
+    </div>
+    <div class="popup-box failer-popup">
+        <div class="cross js--close2">
+            <img class="js-tosvg" src="/assets/img/icon/close.svg" alt="close">
+        </div>
+        <div class="bg-elements">
+            <div class="top-element">
+                <img class="js-tosvg" src="/assets/img/bg-elements/popup--top.png"
+                     alt="top-element">
+            </div>
+            <div class="bottom-element">
+                <img class="js-tosvg" src="/assets/img/bg-elements/popup--bottom.png"
+                     alt="top-element">
+            </div>
+        </div>
+        <div class="postBox">
+            <h5 class="heading5">@Common.GetDictionaryValueOrDefault("FailedMessageTitle")</h5>
+            <p class="body1 popup-para">
+                @Common.GetDictionaryValueOrDefault("FailedMessage")
+            </p>
+            <a href="javaScript:void(0);" class="btn js--close2">@Common.GetDictionaryValueOrDefault("CloseText")</a>
+        </div>
+    </div>
+</div>
+

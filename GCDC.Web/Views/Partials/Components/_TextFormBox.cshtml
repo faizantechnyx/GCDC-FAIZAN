@@ -1,0 +1,45 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS
+@model GCDC.Common.Models.CMS.TextFormBox;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            ViewData["reCaptcha"] = Common.Root.GoogleReCaptchaSiteKey;
+
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName" class="investment-form form--wrapper">
+                <div class="container">
+                    <div class="sec-padded--bottom">
+                        @Html.Raw(Model?.Overline)
+                        <div class="forms-container" data-animation-scroll="lineReveal">
+                            @if (Model?.FormPicker != null)
+                            {
+                                ViewBag.UseDarkFontForButton = Model.UseDarkFontForButton;
+                                var formComponent = Model.FormPicker;
+                                ViewBag.IsActiveFormId = formComponent.Id;
+                                @await Component.InvokeAsync(formComponent.ContentType.Alias, formComponent)
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @await Html.PartialAsync($"~/Views/Partials/Components/_FormSubmissionPopup.cshtml")
+
+            </section>
+
+            <input type="hidden" id="recaptchaToken" name="recaptchaToken" value="@Common.Root.GoogleReCaptchaSiteKey" />
+            <script src="https://www.google.com/recaptcha/api.js?render=@Common.Root.GoogleReCaptchaSiteKey"></script>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

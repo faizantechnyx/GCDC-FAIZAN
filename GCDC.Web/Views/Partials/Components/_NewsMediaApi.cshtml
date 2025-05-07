@@ -1,0 +1,340 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.NewsMediaApi;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FilterModal.cshtml", Model as NewsMediaApi)
+
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="sec-media-gallery-grid"
+            @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                <div class="sec-padded">
+                    <div class="container">
+                        <div class="wrapper-box">
+                            <div class="media-gallery-box">
+                                <div class="filter-bar">
+                                    <div class="left-filter level1">
+                                        <div class="nav-pills tab-items">
+                                            <div class="nav-item button-group">
+                                                
+                                                <button class="nav-link js-navLinks body2 active" data-link="All">@Common.GetDictionaryValueOrDefault("CategoryAll")</button>
+                                                @foreach (var category in Model.CategoryPicker)
+                                                {
+                                                    <button class="nav-link js-navLinks body2" data-link="@category?.Name">
+                                                        @category?.Name
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="right-filter">
+                                        <div class="search-box">
+                                            <input type="text" placeholder="@Common.GetDictionaryValueOrDefault("SearchForTopic")"
+                                                   class="search txt-search input-field body1">
+                                            <button class="btn-search" type="button">
+                                                <img src="/assets/img/icon/filter-search-icon.svg" alt="search icon"
+                                                     class="js-tosvg serch-icon">
+                                            </button>
+                                        </div>
+                                        <div class="filter-view-type">
+                                            @if (Common.Root.ShowNewsFilter)
+                                            {
+                                                <div class="sort-box open-modal-btn" id="sortButton" data-order="asc">
+                                                    <p class="body1">@Model?.FilterLabel</p>
+                                                    <img src="/assets/img/icon/filter-icon.svg" alt="sort icon"
+                                                         class="js-tosvg sort-icon">
+                                                </div>
+                                            }
+                                            <div class="view-type js-view-type">
+                                                <ul>
+                                                    <li>
+                                                        <a class="grid-view-action active" href="javascript:avoid(0)">
+                                                            <img src="/assets/img/icon/grid-view-icon.svg" alt="Grid icon"
+                                                                 class="js-tosvg grid-icon">
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="list-view-action" href="javascript:avoid(0)">
+                                                            <img src="/assets/img/icon/list-view-icon.svg" alt="sort icon"
+                                                                 class="js-tosvg list-icon">
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="tab-content-wrapper level2">
+                                    <div class="tab-content">
+                                        <div class="filter-panel">
+                                            <div id="div_newsitem" class="media-listing grid-view-listing gridWrapper">
+                                                <!-- news ITEM -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn_box">
+                                    <a href="javascript:void(0);" class="btn js-load-more">@Common.GetDictionaryValueOrDefault("LoadMore")</a>
+                                </div>
+                                <div class="no_search_result">
+                                    <div class="content_box">
+                                        <h3 class="heading3 no_result_title">
+                                            @Model?.NoSearchResultMessage
+                                        </h3>
+                                        <p class="body1 pera_text">
+                                            @Model?.NoSearchResultParagraph
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('div#leader-modal').prependTo('body');
+
+        var pageSize = 6;
+        var pageNo = 1;
+        var totalPages = 1000;
+        var selected_news_category = "";
+        var selected_news_tag = "";
+        var selected_news_year = "";
+
+        filterRecord(false);
+
+
+        $('.bottom_btnWrap').on('click', function () {
+            // Close the modal (if needed)
+            closeLeaderModal();
+            pageNo = 1;
+            pageSize = 6;
+
+            // If no filter is applied, select "All" by default
+            if ($('.filterModal_tags input:checked').length === 0) {
+                $('.button-group .nav-link').removeClass('active'); // Remove active from all buttons
+                $('.button-group .nav-link[data-link="All"]').addClass('active');
+
+                filterRecord(false);
+            }
+            else {
+                filterRecord(false, true);
+            }
+        });
+
+        $('.open-modal-btn').on('click', function () {
+            $('#leader-modal').show(); // Or use .fadeIn() for smooth effect
+        });
+
+        $('.js-load-more').on('click', function (e) {
+            e.preventDefault();
+            pageNo += 1;
+            filterRecord(true);
+        });
+
+
+        $('.clearFilterBtn').on('click', function (e) {
+            pageSize = 6;
+            pageNo = 1;
+            totalPages = 1000;
+            var selected_news_category = "";
+            var selected_news_tag = "";
+            var selected_news_year = "";
+
+        });
+
+        // Enter key press in search box
+        $('.txt-search').on('keypress', function (e) {
+
+            if (e.which === 13) { // Enter key
+                var query = $(this).val().trim();
+                if (query !== "") {
+                    $('.btn-search').html('<img src="/assets/img/icon/cross.svg" alt="clear search" class="js-tosvg serch-icon clear-search">');
+                    filterRecord(false); // Perform search
+                }
+            }
+        });
+
+        $(document).on('click', '.clear-search', function () {
+            $('.txt-search').val(''); // Clear search box
+            $('.btn-search').html('<img src="/assets/img/icon/filter-search-icon.svg" alt="search icon" class="js-tosvg serch-icon">');
+            filterRecord(false); // Show all results
+        });
+
+        $('.txt-search').on('input', function () {
+            if ($(this).val().trim() === '') {
+                $('.btn-search').html('<img src="/assets/img/icon/filter-search-icon.svg" alt="search icon" class="js-tosvg serch-icon">'); // Restore search icon
+                filterRecord(false); // Show all results
+            }
+        });
+
+        // Search button click
+        $('.btn-search').on('click', function () {
+
+            var query = $('.txt-search').val().trim();
+            if (query !== "") {
+                $(this).html('<img src="/assets/img/icon/cross.svg" alt="clear search" class="js-tosvg serch-icon clear-search">');
+                filterRecord(false); // Perform search
+            }
+        });
+
+        // Category button click (for active class change and API call)
+        $('.button-group .nav-link').on('click', function () {
+            pageNo = 1;
+
+            $('.button-group .nav-link').removeClass('active'); // Remove active from all buttons
+            $(this).addClass('active'); // Add active to clicked button
+            $('.txt-search').val('');
+            $('.btn-search').val('');
+
+            filterRecord(false);
+        });
+
+        // Helpers
+        function getSearchQuery() {
+            return $('.search-box .txt-search').val().trim();
+        }
+
+        function getActiveCategory() {
+            //return $('.button-group .nav-link.active').text().trim();
+            return $('.button-group .nav-link.active').attr('data-link').trim();
+
+        }
+
+        function getSelectedFilters(filterName) {
+            var selected = [];
+            $(`input[name="${filterName}"]:checked`).each(function () {
+                selected.push($(this).next('span').text().trim());
+            });
+            return selected;
+        }
+
+        function filterRecord(append, isBottomBtnClicked = false) {
+            var query = getSearchQuery();
+            var category = getActiveCategory();
+
+            var selectedCategories = getSelectedFilters('category');
+            var selectedYears = getSelectedFilters('year');
+            var selectedTags = getSelectedFilters('tag');
+
+
+
+            var filter = {
+                '@GCDC.Common.Helpers.Constants.Filters.NewsCategory': selectedCategories.join(','),
+                '@GCDC.Common.Helpers.Constants.Filters.Year': selectedYears.join(','),
+                '@GCDC.Common.Helpers.Constants.Filters.TagsItem': selectedTags.join(',')
+            };
+
+
+            Object.keys(filter).forEach(key => {
+                if (filter[key] === undefined) {
+                    delete filter[key];
+                }
+            });
+
+            var filter_value = Object.keys(filter)
+                .filter(key => filter[key]) // Check if filter[key] has data
+                .map(key => ({
+                    Key: key,
+                    Value: filter[key]
+                }));
+
+            if (pageNo <= totalPages) {
+                $('div#div_newsitem').addClass('is--loading');
+
+                if (append == undefined || append == null || append == false) {
+                    $('#div_newsitem').html("");
+                }
+
+                // Prepare the data object to send
+                var dataToSend = {
+                    PageNo: pageNo,
+                    PageSize: pageSize,
+                    Culture: '@GCDC.Common.Helpers.Constants.Languages.Current',
+                    ContentType: '@GCDC.Common.Helpers.Constants.ContentTypes.News',
+                    SearchQuery: query ? [{ Key: "text", Value: query }] : [],
+                    Category: category
+                };
+
+                if (isBottomBtnClicked) {
+                    dataToSend.Filters = filter_value;
+                }
+
+                var noRecordMessage = "";
+                $.ajax({
+                    url: '@Url.Action("search", "api")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(dataToSend),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': '@ViewData["RequestVerificationToken"]'
+                    },
+                    success: function (response) {
+                        $('div#div_newsitem').removeClass('is--loading');
+                        if (response.statusCode == 200) {
+                            var isViewMore = response.hasNextPage;
+                            if (isViewMore == false) {
+                                $('.js-load-more').hide()
+                            }
+                            else {
+                                $('.js-load-more').show()
+                            }
+                            $('#div_newsitem').append(response.htmlContent);
+                            totalPages = parseInt(response.totalPages);
+                            $('.no_search_result').hide();
+                            $('.media-gallery-box').removeClass("no_result");
+                        }
+                        else {
+                            $('.no_search_result').show();
+                            $('.js-load-more').hide();
+                            $('.media-gallery-box').addClass("no_result");
+                            console.log('Request failed:', message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('div#div_newsitem').removeClass('is--loading');
+                        $('.no_search_result').show();
+                        $('.js-load-more').hide();
+                        $('#div_newsitem').html(noRecordMessage);
+                        $('.media-gallery-box').addClass("no_result");
+                        if (xhr.status == 400 && xhr.responseJSON !== undefined) {
+                            console.log('Request failed:', xhr.responseJSON.message);
+                        }
+                        else {
+                            if (error != null) {
+                                console.log('Request failed:', error);
+                            }
+                        }
+                    }
+                });
+            }
+            return false;
+
+        }
+    });
+</script>

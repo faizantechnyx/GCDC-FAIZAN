@@ -1,0 +1,140 @@
+﻿ @using GCDC.Common.Helpers
+ @using GCDC.Common.Models.CMS;
+ @model GCDC.Common.Models.CMS.InfoCardSection;
+ @using Umbraco.Cms.Core.Models.PublishedContent
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName" class="what-we-do-sec @Model.CustomCssclass">
+                <div class="sec-padded">
+                    <div class="container">
+                        <div class="sub-content-sec">
+                            <div class="sub-heading">
+                                <h3 class="heading3 heading-title" data-animation-type="fade-up">@Model?.Headline</h3>
+                                <p data-animation-type="fade-up" data-delay="0.3" data-blur="5" class="body1 para">
+                                    @Model?.Paragraph
+                                </p>
+                            </div>
+                            @if (Model?.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                            {
+                                <div data-animation-type="fade-up" class="btn-desk">
+                                    <div class="sec-btn">
+                                        @{
+                                            var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                            IPublishedContent popupModel = null;
+                                            if (isPopup)
+                                            {
+                                                popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                            }
+                                            if (popupModel != null)
+                                            {
+                                                @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                            }
+                                        }
+                                        <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                            <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn">@Model?.Cta.Name</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="what-we-do-slider">
+                            @foreach (InfoCardSectionItem mediaCard in Model.Children)
+                            {
+                                <div class="text-card">
+                                    <div class="icon">
+                                        <svg width="41" height="40" viewBox="0 0 41 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g id="Frame 1000004777">
+                                                <path class="center" id="Vector" d="M20.105 31.0815C23.4506 26.7149 27.1535 22.8946 31.9812 19.9212C27.3235 16.7421 23.2868 13.2647 20.1538 8.71501C16.8124 13.0938 13.1351 16.912 8.2901 19.8706C12.8964 23.0322 16.9624 26.5055 20.105 31.0815Z" fill="#A97D46" stroke="#A97D46" stroke-width="0.5"></path>
+                                                <path class="border" id="Vector_2" d="M20.1816 38.5793C25.6935 31.2787 31.7893 24.9083 39.7786 19.979C32.0718 14.6821 25.4129 8.89714 20.2745 1.28899C14.7688 8.61041 8.71649 14.9769 0.697895 19.8808C8.31849 25.1485 15.0276 30.9266 20.1816 38.5793Z" stroke="#A97D46" stroke-width="0.5"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="text-sec">
+                                        <h5 class="heading5 heading">@mediaCard?.Title</h5>
+                                        <div class="body2 para">
+                                            @Html.Raw(mediaCard?.Text)
+                                        </div>
+                                    </div>
+                                    <div class="pattner">
+
+                                        <img src="https://gcdc-be.projectuatserver.com/media/qdqag1lj/card-pattern.png">
+
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="custom-arrows-pagination">
+                            <span class="slide-count heading5">
+                                <span class="current-slide-what-we-do heading5"></span>
+                                <span class="sep-slide heading5"> / </span>
+                                <span class="total-slides-what-we-do heading5"></span>
+                            </span>
+                            <div class="arrows-wrapper">
+                                <button class="custom-prev-what-we-do">
+                                    <svg width="22"
+                                         height="22"
+                                         viewBox="0 0 22 22"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.9173 16.846C8.75444 16.846 8.59159 16.786 8.46302 16.6575L3.26016 11.4546C3.01159 11.206 3.01159 10.7946 3.26016 10.546L8.46302 5.34317C8.71159 5.0946 9.12302 5.0946 9.37159 5.34317C9.62016 5.59174 9.62016 6.00317 9.37159 6.25174L4.62302 11.0003L9.37159 15.7489C9.62016 15.9975 9.62016 16.4089 9.37159 16.6575C9.25159 16.786 9.08016 16.846 8.9173 16.846Z"
+                                              fill="#292D32" />
+                                        <path d="M18.2859 11.6431H3.86014C3.50871 11.6431 3.21729 11.3517 3.21729 11.0003C3.21729 10.6489 3.50871 10.3574 3.86014 10.3574H18.2859C18.6373 10.3574 18.9287 10.6489 18.9287 11.0003C18.9287 11.3517 18.6373 11.6431 18.2859 11.6431Z"
+                                              fill="#292D32" />
+                                    </svg>
+                                </button>
+                                <button class="custom-next-what-we-do">
+                                    <svg width="22"
+                                         height="22"
+                                         viewBox="0 0 22 22"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.0829 16.846C12.92 16.846 12.7571 16.786 12.6286 16.6575C12.38 16.4089 12.38 15.9975 12.6286 15.7489L17.3771 11.0003L12.6286 6.25174C12.38 6.00317 12.38 5.59174 12.6286 5.34317C12.8771 5.0946 13.2886 5.0946 13.5371 5.34317L18.74 10.546C18.9886 10.7946 18.9886 11.206 18.74 11.4546L13.5371 16.6575C13.4086 16.786 13.2457 16.846 13.0829 16.846Z"
+                                              fill="#292D32" />
+                                        <path d="M18.1401 11.6431H3.71439C3.36296 11.6431 3.07153 11.3517 3.07153 11.0003C3.07153 10.6489 3.36296 10.3574 3.71439 10.3574H18.1401C18.4915 10.3574 18.783 10.6489 18.783 11.0003C18.783 11.3517 18.4915 11.6431 18.1401 11.6431Z"
+                                              fill="#292D32" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        @if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                        {
+                            <div class="btn-mob">
+                                <div class="">
+                                    @{
+                                        var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                        IPublishedContent popupModel = null;
+                                        if (isPopup)
+                                        {
+                                            popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                        }
+                                        if (popupModel != null)
+                                        {
+                                            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                        }
+                                    }
+                                    <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                        <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn">@Model?.Cta.Name</a>
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

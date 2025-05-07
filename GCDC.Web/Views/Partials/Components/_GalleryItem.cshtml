@@ -1,0 +1,68 @@
+﻿@using GCDC.Common.Models.CMS
+@using GCDC.Common.Helpers
+@model GCDC.Common.Models.Api.Response.SearchListing
+
+@{
+    var mediaItems = Model.Records as IEnumerable<MediaGalleryItem>;
+}
+
+@if (mediaItems != null && mediaItems.Any())
+{
+@*     <input type="hidden" value="@mediaItems.Count()" id="TotalResults" />
+ *@   
+    
+    @foreach (MediaGalleryItem item in mediaItems)
+    {
+        if (item.IsImage)
+        {
+            <div class="img-wrap">
+                <a href="@item.Image.GetMediaUrl()" class="custom-fancybox" data-type="image" data-title="@item?.Title" data-date="@item?.Date.ToString("dd-MM-yyyy")">
+
+                    <div class="box_wrapper">
+                        <img src="@item?.ThumbnailImage.GetMediaUrl()" alt="@item?.ThumbnailImageAlt">
+                    </div>
+                </a>
+                <div class="content_box">
+                    <h5 class="heading5 media_title">@item?.Title</h5>
+                    <div class="iconBox">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none" class="js-tosvg insvg">
+                            <path d="M14 10.5V13.1667C14 13.5203 13.8595 13.8594 13.6095 14.1095C13.3594 14.3595 13.0203 14.5 12.6667 14.5H3.33333C2.97971 14.5 2.64057 14.3595 2.39052 14.1095C2.14048 13.8594 2 13.5203 2 13.1667V10.5" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M4.66602 7.16675L7.99935 10.5001L11.3327 7.16675" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M8 10.5V2.5" stroke="#0D2640" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="img-wrap">
+                <a href="@item?.Video" class="custom-fancybox" data-type="video" data-title="@item?.Title" data-date="@item?.Date.ToString("dd-MM-yyyy")">
+
+                    <div class="box_wrapper">
+                        <img src="@item?.ThumbnailImage.GetMediaUrl()" alt="@item?.ThumbnailImageAlt">
+                    </div>
+                    <div class="play_icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none" class="js-tosvg insvg">
+                            <path d="M3.83301 2L13.1663 8L3.83301 14V2Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </a>
+                <div class="content_box">
+                    <h5 class="heading5 media_title">@item?.Title</h5>
+                    <div class="iconBox">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none" class="js-tosvg insvg">
+                            <path d="M14 10.5V13.1667C14 13.5203 13.8595 13.8594 13.6095 14.1095C13.3594 14.3595 13.0203 14.5 12.6667 14.5H3.33333C2.97971 14.5 2.64057 14.3595 2.39052 14.1095C2.14048 13.8594 2 13.5203 2 13.1667V10.5" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M4.66602 7.16675L7.99935 10.5001L11.3327 7.16675" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M8 10.5V2.5" stroke="#0D2640" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+        }
+    }
+}
+
+
+

@@ -1,0 +1,26 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.TextBlock;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="detail_banner_content terms-and-condition" @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName">
+                <div class="container">
+                    <div class="inner-banner-contentWrapper content--page">
+                        @Html.Raw(Model?.Text)
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

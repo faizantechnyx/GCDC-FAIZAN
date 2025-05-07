@@ -1,0 +1,122 @@
+﻿@model GCDC.Common.Models.CMS.GalleryApi
+@using GCDC.Common.Models.CMS;
+
+
+@if (Model != null)
+{
+	var years = new List<int>();
+
+	var uniqueTags = new List<string>();
+
+	foreach (MediaGallery item in Model.CategoryPicker)
+	{
+		var mediaItems = item.Children;
+		foreach (MediaGalleryItem mediaItem in mediaItems)
+		{
+			years.Add(mediaItem.Date.Year); // Add all years (including duplicates)
+
+			if (mediaItem.Tags != null)
+			{
+				var tagNames = mediaItem.Tags.Select(tag => tag.Name); // Adjust "Name" to the correct property
+				uniqueTags.AddRange(tagNames);
+			}
+		}
+	}
+
+	var uniqueYearsList = years.Distinct().ToList();
+	var uniqueTagsList = uniqueTags.Distinct().ToList();
+
+	<div id="leader-modal" class="modal filter_modal">
+		<div class="modal-content">
+			<span class="close" aria-label="Close">
+				<img class="js-tosvg" src="/assets/img/icon/close.svg" alt="close" />
+			</span>
+			<div class="filterWrapper">
+				<div class="filters-header">
+					<h3 class="heading3">@Model?.FilterHeading</h3>
+
+					<div class="btnWrap">
+						<a href="javascript:void(0);" class="btn no--bg clearFilterBtn">@Model?.ClearFilterLabel</a>
+					</div>
+				</div>
+				<div class="inner_filter_wrapper">
+					<div class="customScroll_bar">
+						<div class="filterModal_tags">
+
+							@* <div class="filter_tags_wrapper">
+								<div class="title">
+									<h5 class="heading5">@Model?.CategoryLabel</h5>
+
+								</div>
+								<div class="tags_wrapper">
+									@foreach (var category in Model.CategoryPicker)
+									{
+										<label class="tag-label">
+											<input type="checkbox" name="category" value="@category.Name">
+											<span>@category.Name</span>
+										</label>
+									}
+								</div>
+							</div> *@
+							@if (uniqueTagsList != null && uniqueTagsList.Count > 1)
+							{
+							<div class="filter_tags_wrapper">
+								<div class="title">
+									<h5 class="heading5">@Model?.TagsLabel</h5>
+								</div>
+								<div class="tags_wrapper">
+									@foreach (var tag in uniqueTagsList)
+									{
+										<label class="tag-label">
+											<input type="checkbox" name="tag" value="@tag">
+											<span>@tag</span>
+										</label>
+									}
+
+								</div>
+							</div>
+							}
+							@if (uniqueYearsList != null && uniqueYearsList.Count > 1)
+							{
+								<div class="filter_tags_wrapper">
+									<div class="title">
+										<h5 class="heading5">@Model?.YearLabel</h5>
+									</div>
+
+									<div class="tags_wrapper">
+										@foreach (var year in uniqueYearsList)
+										{
+											<label class="tag-label">
+												<input type="checkbox" name="year" value="@year">
+												<span>@year</span>
+											</label>
+										}
+									</div>
+								</div>
+							}
+
+						</div>
+					</div>
+					<div class="bottom_btnWrap">
+						<a href="javascript:void(0);" class="btn">@Model?.ApplyFilterLabel</a>
+
+					</div>
+				</div>
+
+			</div>
+			<div class="modal--elements">
+				<div class="bg-elements">
+					<div class="top-element">
+						<img src="/assets/img/bg-elements/filter-element1.png">
+					</div>
+					<div class="bottom-element">
+						<img src="/assets/img/bg-elements/filter-element2.png">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+

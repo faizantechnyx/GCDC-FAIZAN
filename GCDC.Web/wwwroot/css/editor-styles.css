@@ -1,0 +1,36 @@
+
+        
+
+
+
+
+
+
+
+
+/**umb_name:quote-text*/
+.quote-text {
+    font-style: italic;
+    border-left: 4px solid #ccc;
+    padding-left: 10px;
+}
+
+/**umb_name:highlight-yellow*/
+.highlight-yellow {
+	background-color: yellow;
+}
+
+/**umb_name:highlight-green*/
+.highlight-green {
+	background-color: lightgreen;
+}
+
+/**umb_name:text-red*/
+.text-red {
+	color: red;
+}
+
+/**umb_name:theme-color*/
+.theme-color {
+	color: #cfa474;
+}

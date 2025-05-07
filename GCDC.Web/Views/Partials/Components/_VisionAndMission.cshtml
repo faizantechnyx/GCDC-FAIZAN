@@ -1,0 +1,90 @@
+﻿@using GCDC.Common.Helpers;
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.VisionAndMission;
+@using Umbraco.Cms.Core.Models.PublishedContent
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName" class="@(Model.ThreeSection ? "sec-interactive-width-trio" : "sec-interactive-width") sec-padded no-bg">
+                <div class="container container--custom" id="@Model.SectionNameForMenu.GetHtmlEncodedString()">
+                    <div class="comp-wrapper">
+                        <h3 class="heading3 txt-white" data-animation-type="fade-up">@Html.Raw(Model?.Title)</h3>
+                        <div class="img-gridBox">
+                            @{
+                                var totalItems = Model.Children.ToList().Count;
+                                var currentIndex = 0;
+
+                                foreach (VisionSectionItem item in Model.Children)
+                                {
+                                    <div class="img-grid">
+                                        <div class="img-wrapper">
+                                            <picture>
+                                                <source media="(min-width:767px)" srcset="@item?.Media?.GetMediaUrl()" alt="@item?.Alt">
+                                                <img src="@(item?.MobileImage?.GetMediaUrl() ?? item?.Media?.GetMediaUrl())" alt="@item?.Alt">
+                                            </picture>
+                                            <div class="icon-box">
+                                            </div>
+                                        </div>
+                                        <div class="content-wrapper">
+                                            <div class="box-content">
+                                                <h3 class="heading4 content-heading">
+                                                    @item?.Headline
+                                                </h3>
+                                                <div class="inner-content-wrapper">
+                                                    <p class="body1">
+                                                        @item?.Paragraph
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            @if (item.Cta != null && !string.IsNullOrEmpty(item.Cta.Url))
+                                            {
+                                                <div class="box-btn">
+                                                    @{
+                                                        var isPopup = item?.Cta?.Url?.Contains("#popup") == true;
+                                                        IPublishedContent popupModel = null;
+                                                        if (isPopup)
+                                                        {
+                                                            popupModel = Common.GetPopupModel(item.Cta.Url);
+                                                        }
+                                                        if (popupModel != null)
+                                                        {
+                                                            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                                        }
+                                                    }
+                                                    <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                                        <a href="@(isPopup ? "javascript:void(0);" : item.Cta.Url)" class="btn">@item?.Cta.Name</a>
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+
+                                    </div>
+
+                                    @if (currentIndex < totalItems - 1) // Skip separator for the last item
+                                    {
+                                        <div class="seprator-white"></div>
+                                    }
+
+                                    currentIndex++;
+
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

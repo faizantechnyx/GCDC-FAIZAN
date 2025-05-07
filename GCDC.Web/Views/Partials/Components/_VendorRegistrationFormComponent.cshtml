@@ -1,0 +1,103 @@
+﻿@using GCDC.Common.Helpers
+@using Umbraco.Cms.Web.Common
+@model GCDC.Common.Models.CMS.VendorRegistrationsForm;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <form id="@Model?.Id" autocomplete="off" form-url="@Common.GetCRMUrl()" form-id="@Common.GetVendorRegistrationFormId()" class="contact-form @(ViewBag!=null && ViewBag.IsActiveFormId!=null && ViewBag.IsActiveFormId == Model?.Id ? "active" :"")" @GCDC.Common.Helpers.Constants.cms_component_name="@Model?.Name" @Constants.cms_page_view_name="@ViewName">
+                <div class="primary-fields">
+                    <!-- //First Name -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="firstName">@Model?.FirstName</label>
+                        <input class="input-txt-field body1"
+                               type="text"
+                               id="firstName"
+                               placeholder="@Common.GetDictionaryValueOrDefault("FirstNamePlaceholder")"
+                               name="firstName" />
+                        <span class="error-message">@Common.GetDictionaryValueOrDefault("FirstNameError")</span>
+                    </div>
+
+                    <!-- //Last Name -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="lastName">@Model?.LastName</label>
+                        <input class="input-txt-field body1"
+                               type="text"
+                               id="lastName"
+                               placeholder="@Common.GetDictionaryValueOrDefault("LastNamePlaceholder")"
+                               name="lastName" />
+                        <span class="error-message">@Common.GetDictionaryValueOrDefault("LastNameError")</span>
+                    </div>
+
+                    <!-- //Email -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="email">@Model?.Email</label>
+                        <input class="input-txt-field body1"
+                               type="text"
+                               id="email"
+                               placeholder="@Common.GetDictionaryValueOrDefault("EmailPlaceholder")"
+                               name="email" />
+                        <span class="error-message">@Common.GetDictionaryValueOrDefault("EmailValidation")</span>
+                    </div>
+
+                    <!-- //Phone -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="phone">@Model?.Phone</label>
+                        <input class="input-txt-field body1"
+                               type="tel"
+                               id="phone"
+                               placeholder="@Common.GetDictionaryValueOrDefault("PhonePlaceholder")"
+                               name="phone" />
+                        <span class="error-message phone-error">@Common.GetDictionaryValueOrDefault("PhoneError")</span>
+                    </div>
+
+                    <!-- //CompanyName -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="CompanyName">@Model?.CompanyName</label>
+                        <input class="input-txt-field body1"
+                               type="text"
+                               id="CompanyName"
+                               name="CompanyName"
+                               placeholder="@Common.GetDictionaryValueOrDefault("CompanyPlaceholder")" />
+                        <span class="error-message">@Common.GetDictionaryValueOrDefault("CompanyError")</span>
+                    </div>
+
+                    <!-- //Position -->
+                    <div class="form-group">
+                        <label class="input-label body2" for="JobTitle">@Model?.Position</label>
+                        <input class="input-txt-field body1"
+                               type="text"
+                               id="JobTitle"
+                               name="JobTitle"
+                               placeholder="@Common.GetDictionaryValueOrDefault("PositionPlaceholder")" />
+                        <span class="error-message">@Common.GetDictionaryValueOrDefault("PositionError")</span>
+                    </div>
+
+                </div>
+
+                <!-- Message -->
+                <div class="form-group txt-area-body">
+                    <label class="input-label body2" for="message">@Model?.Message</label>
+                    <textarea class="input-txt-field body1" id="message" name="message" maxlength="300" placeholder="@Common.GetDictionaryValueOrDefault("MessagePlaceholder")"></textarea>
+                    <span class="char-count body3">@Common.GetDictionaryValueOrDefault("WordCount")</span>
+                    <span class="error-message">@Common.GetDictionaryValueOrDefault("MessageValidation")</span>
+                </div>
+
+                <div class="submit-btn">
+                    <button type="submit" class="@((ViewBag?.UseDarkFontForButton == null || ViewBag?.UseDarkFontForButton == false) ? "btn btn-dark" : "btn")">@Common.GetDictionaryValueOrDefault("SubmitButton")</button>
+                </div>
+            </form>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

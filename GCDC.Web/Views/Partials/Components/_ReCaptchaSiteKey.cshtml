@@ -1,0 +1,29 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.Site
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <script src="https://www.google.com/recaptcha/api.js?render=@Model.GoogleReCaptchaSiteKey"></script>
+            <script>
+                grecaptcha.ready(function () {
+                    // do request for recaptcha token
+                    // response is promise with passed token
+                    grecaptcha.execute('@Common.Root.GoogleReCaptchaSiteKey', { action: 'contactForm' }).then(function (token) {
+                        // add token to form
+                        $('form').prepend('<input type="hidden" name="recaptchaToken" value="@Common.Root.GoogleReCaptchaSiteKey">');
+                    });;
+                });
+
+
+            </script>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

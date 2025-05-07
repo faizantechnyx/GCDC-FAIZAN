@@ -1,0 +1,133 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.MainCard;
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using GCDC.Core.Repositories.Common
+@using Serilog
+@using Umbraco.Cms.Core.Models.PublishedContent
+@inject IBaseControllerFactory factory;
+
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="press_card_sec @(Model.IsReportSection ? "report-cards" : "")" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                <div class="sec-padded">
+                    <div class="container">
+                        <div class="title-wrap">
+                            <h3 class="heading3 title--text">@Model?.Heading</h3>
+                            @if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                            {
+                                var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                IPublishedContent popupModel = null;
+                                if (isPopup)
+                                {
+                                    popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                }
+                                if (popupModel != null)
+                                {
+                                    @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                }
+                                <div class="btn-wrap">
+                                    <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                        <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn">@Model?.Cta.Name</a>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="press_grid">
+                            @if (Model?.MainMediaPicker != null)
+                            {
+                                var mediaCard = Model?.MainMediaPicker as NewsItem;
+                                var category = mediaCard?.MediaCategoryPicker as NewsCategoryItem;
+                                <div class="card_box card_box--wide" onclick="location.href='@mediaCard?.GetDetailPageUrl()'" style="cursor: pointer;">
+                                    <div class="tag">
+                                        <p class="body1 tag--label">@category?.CategoryName</p>
+                                    </div>
+                                    @if (@mediaCard.BackgroundImage != null)
+                                    {
+                                        <div class="img-sec">
+                                            <img src="@mediaCard.BackgroundImage.GetMediaUrl()" alt="@mediaCard?.Alt">
+                                        </div>
+                                    }
+                                    <div class="content_box">
+                                        <div class="title">
+                                            <h5 class="heading5 card_main_title">
+                                                <div class="line-wrapper">
+                                                    <div class="line-wrapper">
+                                                        @Html.Raw(mediaCard?.Headline)
+                                                    </div>
+                                                </div>
+
+                                            </h5>
+                                        </div>
+                                        <div class="decription_wrapper">
+                                            <div class="pera-sec">
+                                                <p class="body2 description">
+                                                    @mediaCard?.ShortDescription
+                                                </p>
+                                            </div>
+                                            <div class="bottom_tagline">
+                                                <p class="body1 card_meta">
+                                                    @mediaCard?.Date.ToString("MMMM dd, yyyy")
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="card_listing">
+                                @foreach (NewsItem GridItem in Model.MediaPicker)
+                                {
+                                    var category = GridItem?.MediaCategoryPicker as NewsCategoryItem;
+
+                                    <div class="listing_card_box" onclick="location.href='@GridItem?.GetDetailPageUrl()'" style="cursor: pointer;">
+                                        @if (@GridItem?.BackgroundImage != null)
+                                        {
+                                            <div class="img_wrap">
+                                                <img src="@GridItem?.BackgroundImage.GetMediaUrl()" alt="@GridItem?.Alt">
+                                            </div>
+                                        }
+                                        <div class="content_wrapper">
+                                            <div class="tag">
+                                                <p class="body1 tag--label">@category?.CategoryName</p>
+                                            </div>
+                                            <div class="title">
+                                                <h5 class="heading5 card_main_title">
+                                                    @Html.Raw(GridItem?.Headline != null
+                                                             ? GridItem.Headline.Trim().Substring(0, Math.Min(30, GridItem.Headline.Trim().Length))
+                                                             : "")
+                                                </h5>
+                                            </div>
+                                            <div class="pera-sec">
+                                                <p class="body2 description">
+                                                    @GridItem?.ShortDescription
+                                                </p>
+                                            </div>
+                                            <div class="bottom_tagline">
+                                                <p class="body1 card_meta">
+                                                    @GridItem?.Date.ToString("MMMM dd, yyyy")
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

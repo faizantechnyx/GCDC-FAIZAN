@@ -1,0 +1,56 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.TwoComponentSection;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <div id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="@(Model.UseCssClass1 ? "bg-wrapper2" : "bg--wrapper")" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                @{
+                    await Html.RenderPartialAsync(Constants.ComponentViewLocation + "_Theme.cshtml", Model.ThemeSelector);
+
+                    if (Model.FirstComponent != null)
+                    {
+                        @await Component.InvokeAsync(Model.FirstComponent?.ContentType.Alias, Model.FirstComponent)
+                    }
+
+                    if (Model.SecondComponent != null)
+                    {
+                        @await Component.InvokeAsync(Model.SecondComponent?.ContentType.Alias, Model.SecondComponent)
+                    }
+
+                    @if (Model.DesktopPattern != null)
+                    {
+                        <div class="section-pattern">
+
+                            <picture>
+
+                                <source media="(min-width:767px)" srcset="@Model.DesktopPattern.GetMediaUrl()" alt="">
+
+                                @if (Model.MobilePattern != null)
+                                {
+                                    <img src="@Model.MobilePattern.GetMediaUrl()" alt="">
+                                }
+                                else
+                                {
+                                    <img src="@Model.DesktopPattern.GetMediaUrl()" alt="">
+                                }
+                            </picture>
+                        </div>
+                    }
+
+                }
+
+            </div>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

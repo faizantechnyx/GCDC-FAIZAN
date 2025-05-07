@@ -1,0 +1,139 @@
+﻿@using GCDC.Common.Helpers
+@using System.Web
+@model GCDC.Common.Models.CMS.TwoColImageWithText;
+@using Umbraco.Cms.Core.Models.PublishedContent
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="ceo-message @(Model.IsLeadershipPage ? "quoted--msg" : "")" @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName">
+                <div class="container">
+                    <div class="wrapper">
+                        <div class="image-warpper">
+                            @if (Model?.Image != null)
+                            {
+                                <picture>
+                                    <source media="(min-width:600px)" srcset="@Model?.Image?.GetMediaUrl()" alt="@Model?.Alt">
+                                    <img src="@(Model?.MobileImage?.GetMediaUrl() ?? Model?.Image?.GetMediaUrl())" alt="@Model?.Alt">
+                                </picture>
+                            }
+                        </div>
+
+                        <div class="content-warpper" data-animation-type="fade-up">
+                            <h4 class="heading4">
+                                @if (Model?.Description != null)
+                                {
+                                    <sup class="sup-icon"><img src="/assets/img/icon/quote1.png" class="qoma-icon"></sup>
+                                    var description = Model.Description.ToString();
+                                    if (description.StartsWith("<p>") && description.EndsWith("</p>") && description.Length > 7)
+                                    {
+                                        description = description.Substring(3, description.Length - 7);
+                                    }
+                                    @Html.Raw(description)
+                                    <sub class="sub-icon"><img src="/assets/img/icon/quote2.png" class="qoma-icon"></sub>
+                                }
+                            </h4>
+                            <div class="inner-content">
+                                <h5 class="ceo-name heading5">@Model?.Title</h5>
+                                <p class="body2">@Model?.Role</p>
+                                @if (Model?.OfficialTitle != null)
+                                {
+                                    <p class="body2">@Model?.OfficialTitle</p>
+                                }
+                            </div>
+                            <div class="btn-wrapper">
+                                @if (Model?.ViewButton != null && !string.IsNullOrEmpty(Model.ViewButton.Url))
+                                {
+                                    <div class="sec-btn">
+                                        <a href="javascript:void(0);" class="btn btn-secondary btn-dark open-modal-btn"
+                                           data-title="@Model?.Title"
+                                           data-designation="@Model?.Role"
+                                           data-description="@Model?.Description"
+                                           data-img-src="@Model?.Image?.GetMediaUrl()">@Model?.ViewButton.Name</a>
+                                    </div>
+                                }
+                                @if (Model?.FullMessageButton != null && !string.IsNullOrEmpty(Model.FullMessageButton.Url))
+                                {
+                                    <div class="sec-btn">
+                                        @{
+                                            var isPopup = Model?.FullMessageButton?.Url?.Contains("#popup") == true;
+                                            IPublishedContent popupModel = null;
+                                            if (isPopup)
+                                            {
+                                                popupModel = Common.GetPopupModel(Model.FullMessageButton.Url);
+                                            }
+                                            if (popupModel != null)
+                                            {
+                                                @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                            }
+                                        }
+                                        <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                            <a href="@(isPopup ? "javascript:void(0);" : Model.FullMessageButton.Url)" class="btn btn-dark">@Model?.FullMessageButton.Name</a>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.ShowVerticalLine)
+                    {
+                        <div class="vertical-line-wrapper">
+                            <div class="vertical-line-2">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-1 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-2 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-3 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

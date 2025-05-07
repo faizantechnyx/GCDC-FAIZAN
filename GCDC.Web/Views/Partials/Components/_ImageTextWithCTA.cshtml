@@ -1,0 +1,102 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.ImageTextWithCta;
+@using Umbraco.Cms.Core.Models.PublishedContent
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <div id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName" class="board-of-director-sec sec-workWithUs sty1 @(Model.Style ? "sty-02" : "")">
+                <div class="container">
+                    <div class="sec-padded">
+                        <div class="leadership-wrapper">
+                            <div class="img-box" data-animation-type="fade-right">
+                                <img src="@Model?.Media?.GetMediaUrl()" alt="thumb Image">
+                            </div>
+                            <div class="content-wrapper">
+                                <div class="text-content" data-animation-type="fade-up">
+                                    <h3 class="heading3">@Model?.Headline</h3>
+                                    <div class="body1 sec-description">@Html.Raw(Model?.Paragraph)</div>
+                                </div>
+                                <div class="sec-btn" data-animation-type="fade-up">
+                                    @if (Model.FileDownload != null)
+                                    {
+                                        <a href="@Model.FileDownload.GetMediaUrl()" download class="btn btn_Icon">
+                                            @Common.GetDictionaryValueOrDefault("Download")
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none" class="js-tosvg insvg">
+                                                <path d="M14 10.5V13.1667C14 13.5203 13.8595 13.8594 13.6095 14.1095C13.3594 14.3595 13.0203 14.5 12.6667 14.5H3.33333C2.97971 14.5 2.64057 14.3595 2.39052 14.1095C2.14048 13.8594 2 13.5203 2 13.1667V10.5" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M4.66602 7.16675L7.99935 10.5001L11.3327 7.16675" stroke="#0D2640" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M8 10.5V2.5" stroke="#0D2640" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            </svg>
+                                        </a>
+                                    }
+                                    else if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+
+                                    {
+
+                                        var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                        IPublishedContent popupModel = null;
+
+                                        if (isPopup)
+                                        {
+                                            popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                        }
+                                        if (popupModel != null)
+                                        {
+                                            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                        }
+                                        <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                            <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn">@Model?.Cta.Name</a>
+                                        </span>
+                                    }
+                                </div>
+                                @* <div class="leadership-art">
+                                    <img class="js-tosvg" src="/assets/img/icon/leadership-art.svg" alt="Decorative Art">
+                                </div> *@
+                                <div class="leadership-art1">
+
+                                    <img src="https://gcdc-be.projectuatserver.com/media/l5lfajgi/block-pattern.png" alt="Decorative Art">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const downloadButton = document.querySelector(".sec-btn a.btn_Icon");
+
+        if (downloadButton) {
+            downloadButton.addEventListener("click", function (event) {
+                // Extract file name and extension from the URL
+                let fileUrl = this.getAttribute("href");
+                let fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+                let fileExtension = fileName.split('.').pop();
+
+                // Push event to Google Tag Manager
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'file_download',
+                    'event_action': 'download',
+                    'event_label': fileName
+                });
+            });
+        }
+    });
+</script>

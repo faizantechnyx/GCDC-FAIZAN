@@ -1,0 +1,83 @@
+﻿@using GCDC.Common.Helpers
+@using GCDC.Common.Models.CMS;
+@model GCDC.Common.Models.CMS.FAqs;
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name ="@Model.Name" @Constants.cms_page_view_name ="@ViewName" class="company-faq-sec">
+                <div class="container">
+                    <div class="sec-padded">
+                        <div class="sub-content-sec">
+                            <div class="sub-heading">
+                                <p class="overline special-heading" data-animation-type="fade-up">@Model?.Title</p>
+                                <h3 class="heading3 heading-title" data-animation-type="fade-up">@Model?.Subheading</h3>
+                            </div>
+                            <div class="btn-desk">
+                                <div class="sec-btn" data-animation-type="fade-up">
+                                    @if (Model.Button != null && !string.IsNullOrEmpty(Model.Button.Url))
+                                    {
+                                        <a href="@Model?.Button.Url" class="btn">@Model?.Button.Name</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="company-faq-accordion">
+                            @if (Model.FaqPicker != null && Model.FaqPicker.Count() > 0)
+                            {
+                                var numbers_sections = 2;
+                                var faqItems = Model.FaqPicker.Select(x => x as FAqsItem).Where(x => x != null).ToList();
+                                int halfCount = (int)Math.Ceiling(faqItems.Count / 2.0); // Split size
+                                var chunks = new List<List<FAqsItem>>
+                                {
+                                    faqItems.Take(halfCount).ToList(), // First half
+                                    faqItems.Skip(halfCount).ToList()  // Second half
+                                };
+
+
+                                @foreach (var indchunk in chunks)
+                                {
+                                    <div class="accordion main-accordion" data-accordion="accordion1">
+                                        @foreach (FAqsItem faqItem in indchunk)
+                                        {
+                                            <div class="accordion-item" data-animation-type="fade-up">
+                                                <div class="header-sec accordion-header">
+                                                    <h5 class="heading5 accordion-heading">@faqItem?.Question</h5>
+                                                    <div class="accordion-icon"></div>
+                                                </div>
+                                                <div class="accordion-content">
+                                                    <div class="content">
+                                                        @Html.Raw(faqItem?.Answer)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="btn-mob">
+                            <div class="sec-btn" data-animation-type="fade-up">
+                                @if (Model.Button != null && !string.IsNullOrEmpty(Model.Button.Url))
+                                {
+                                    <a href="@Model?.Button.Url" class="btn">@Model?.Button.Name</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

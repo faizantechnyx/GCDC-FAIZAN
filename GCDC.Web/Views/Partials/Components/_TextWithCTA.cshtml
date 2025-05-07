@@ -1,0 +1,108 @@
+﻿@using GCDC.Common.Helpers
+@using Umbraco.Cms.Core.Models
+@model GCDC.Common.Models.CMS.TextWithCta;
+@using Umbraco.Cms.Core.Models.PublishedContent
+
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+
+
+            <div id="@Model.SectionNameForMenu.GetHtmlEncodedString()" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                <div class="section" id="section2">
+                    <p class="overline">@Model?.Overline</p>
+                    <h3 class="paragraph-animation paragraph heading3" data-animation-scroll="lineReveal" data-blur="10" style="">
+                        <div class="line-wrapper" style="overflow: hidden;">
+                            @Html.Raw(Model?.Paragraph)
+                        </div>
+                    </h3>
+                    <div data-animation-scroll="lineReveal" class="sec-description">
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="body1">@Model?.Description</p>
+                        }
+                    </div>
+                    @if (Model.Cta != null && !string.IsNullOrEmpty(Model.Cta.Url))
+                    {
+                        <div data-animation-scroll="lineReveal" class="sec-btn" style="">
+                            <div class="line-wrapper" style="overflow: hidden;">
+                                <div style="display: block; text-align: center; position: relative; filter: blur(0px); transform: translate(0px, 0px); opacity: 1;">
+                                    @{
+                                        var isPopup = Model?.Cta?.Url?.Contains("#popup") == true;
+                                        IPublishedContent popupModel = null;
+                                        if (isPopup)
+                                        {
+                                            popupModel = Common.GetPopupModel(Model.Cta.Url);
+                                        }
+                                        if (popupModel != null)
+                                        {
+                                            @await Html.PartialAsync(Constants.ComponentViewLocation + "_FormPopup.cshtml", popupModel)
+                                        }
+                                    }
+                                    <span class="@(popupModel!=null ? "div_anchor_popup" : "") @(isPopup ? "open-modal-btn-from" : "")" data-modal-id="div_popup_@(popupModel != null ? popupModel.Id : "")">
+                                        <a href="@(isPopup ? "javascript:void(0);" : Model.Cta.Url)" class="btn btn-dark">@Model?.Cta.Name</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.ShowVerticalLine)
+                    {
+                        <div class="vertical-line-wrapper">
+                            <div class="vertical-line-2">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-1 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-2 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none" class="js-tosvg diamond-icon-vertical icon-3 insvg" style="opacity: 1;">
+                                        <g clip-path="url(#clip0_1897_2221)">
+                                            <path d="M10 5.41429C8.01822 3.99829 6.31429 2.45584 5.01163 0.410217C3.60494 2.37843 2.0619 4.08215 -0.000646591 5.38204C1.95852 6.7903 3.67601 8.33081 4.98255 10.3887C6.39054 8.42628 7.94521 6.72127 10 5.41429Z" fill="white"></path>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1897_2221">
+                                                <rect width="10" height="9.97783" fill="white" transform="matrix(-1 0 0 1 10 0.410217)"></rect>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

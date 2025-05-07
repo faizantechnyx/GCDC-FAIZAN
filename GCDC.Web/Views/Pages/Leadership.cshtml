@@ -1,0 +1,31 @@
+﻿@using GCDC.Common.Helpers
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Serilog
+@model GCDC.Common.Models.CMS.Leadership
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<label @Constants.cms_page_name="@Model.ContentType.Alias" @Constants.cms_page_view_name="@ViewName"></label>
+@{
+    Layout = Constants.LayoutViewLocation;
+    using (new FunctionTracer(true))
+    {
+        @if (Model.ComponentPicker != null && Model.ComponentPicker.Any())
+        {
+            foreach (IPublishedContent component in Model.ComponentPicker)
+            {
+                try
+                {
+                    @await Component.InvokeAsync(component.ContentType.Alias, component)
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, ex.Message);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,105 @@
+﻿@using GCDC.Common.Helpers
+@model GCDC.Common.Models.CMS.HeroBanner;
+
+@{
+    var ViewName = ViewContext.ExecutingFilePath;
+}
+
+@if (Model != null)
+{
+    @using (new FunctionTracer(false, Model.Name))
+    {
+        try
+        {
+            <section id="@Model.SectionNameForMenu.GetHtmlEncodedString()" class="banner-wrapper" @GCDC.Common.Helpers.Constants.cms_component_name="@Model.Name" @Constants.cms_page_view_name="@ViewName">
+                @if (!string.IsNullOrEmpty(Model.Media?.GetMediaUrl()))
+                {
+                    <div class="video--wrapper">
+                        <video id="videoBannerPoster" class="my-video-js vjs-layout-large js-bg-video" loop muted playsinline
+                               preload="auto" autoplay data-src="@Model?.Media.GetMediaUrl()">
+                            <source data-desktop-src="@Model?.Media.GetMediaUrl()"
+                                    data-mobile-src="@Model?.Media.GetMediaUrl()" data-src="@Model?.Media?.GetMediaUrl()"
+                                    type="video/mp4" />
+                        </video>
+                    </div>
+                }
+
+                <div class="section" id="section1">
+                    <div class="description-moblie body1" data-animation-scroll="lineReveal" data-blur="">
+                        @Html.Raw(Model?.Paragraph)
+                    </div>
+
+                    <div class="text-container">
+                        <h1 class="scrolling-text-animation heading1">
+                            @Html.Raw(Model?.Overline)
+                        </h1>
+                    </div>
+
+                    <div class="bottom-wrapper">
+                        <div class="horizontal-line" data-animation-scroll="horizontalLine" data-initial-width="20">
+                            <span>
+                                <img class="js-tosvg diamond-icon-horizontal icon-1" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                            <span>
+                                <img class="js-tosvg diamond-icon-horizontal icon-2" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                            <span>
+                                <img class="js-tosvg diamond-icon-horizontal icon-3" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                        </div>
+                        <div class="vertical-line-1">
+                            <span>
+                                <img class="js-tosvg diamond-icon-vertical icon-1" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                            <span>
+                                <img class="js-tosvg diamond-icon-vertical icon-2" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                            <span>
+                                <img class="js-tosvg diamond-icon-vertical icon-3" src="/assets/img/icon/diamondIcon.svg"
+                                     alt="" />
+                            </span>
+                        </div>
+
+                        <div class="bottom-content">
+                            <p class="sub-heading overline" data-animation-scroll="lineReveal" data-blur="">
+                                @Model?.Headline
+                            </p>
+                            <div class="description body1" data-animation-scroll="lineReveal" data-blur="">
+                                @Html.Raw(Model?.Paragraph)
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.DesktopPattern != null)
+                    {
+                        <div class="section-pattern">
+
+                            <picture>
+
+                                <source media="(min-width:767px)" srcset="@Model.DesktopPattern.GetMediaUrl()" alt="">
+
+                                @if (Model.MobilePattern != null)
+                                {
+                                    <img src="@Model.MobilePattern.GetMediaUrl()" alt="">
+                                }
+                                else
+                                {
+                                    <img src="@Model.DesktopPattern.GetMediaUrl()" alt="">
+                                }
+                            </picture>
+                        </div>
+                    }
+                </div>
+
+            </section>
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

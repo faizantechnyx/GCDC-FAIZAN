@@ -2,11 +2,11 @@ name: gcdc-iis
 
 on:
   push:
-    branches: [ "staging" ]
+    branches: [ "uat" ]
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: GCDC-NNUAT-CIS
     steps:
     - uses: actions/checkout@v3
     - name: Clean and Delete Publish Folder
@@ -20,12 +20,12 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: GCDC-NNUAT-CIS
     steps:
     - name: Deploy to IIS
       run: |
         # Replace 'siteName' with your actual site name
-        $siteName = 'gcdc-be.projectuatserver.com'
+        $siteName = 'uat.gulfcoastdevelopment.sa'
         $publishFolder = './publish'  # Adjust the path based on your project structure
 
         Stop-WebAppPool -Name $siteName
@@ -34,7 +34,7 @@ jobs:
         Stop-WebSite -Name $siteName
 
         # Copy the published files to the IIS site folder
-        Copy-Item -Path "$publishFolder\*" -Destination "C:\inetpub\wwwroot\$siteName" -Force -Recurse -Exclude wwwroot\media, appsettings.json
+        Copy-Item -Path "$publishFolder\*" -Destination "C:\inetpub\wwwroot\" -Force -Recurse -Exclude wwwroot\media, appsettings.json
 
         Start-WebAppPool -Name $siteName
 

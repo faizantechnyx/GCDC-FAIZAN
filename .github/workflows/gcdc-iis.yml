@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: GCDC-NNUAT-CIS
+    runs-on: cis-runner
     steps:
     - uses: actions/checkout@v3
     - name: Clean and Delete Publish Folder
@@ -20,7 +20,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: GCDC-NNUAT-CIS
+    runs-on: cis-runner
     steps:
     - name: Deploy to IIS
       run: |

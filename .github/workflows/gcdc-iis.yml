@@ -33,6 +33,8 @@ jobs:
         # Stop the IIS site
         Stop-WebSite -Name $siteName
 
+        Start-Sleep -Seconds 10
+
         # Copy the published files to the IIS site folder
         Copy-Item -Path "$publishFolder\*" -Destination "C:\inetpub\wwwroot\" -Force -Recurse -Exclude wwwroot\media, appsettings.json
 
